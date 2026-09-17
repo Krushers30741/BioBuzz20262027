@@ -43,7 +43,7 @@ the project should open and sync in Android Studio without further changes.
 
 ## What's intentionally not here yet
 
-Anything tied to a specific scoring mechanism (an Intake-equivalent, a Shooter-equivalent, real
+Anything tied to a specific scoring mechanism (an org.firstinspires.ftc.teamcode.Intake-equivalent, a Shooter-equivalent, real
 Auto/TeleOp scoring routines) — because the team hasn't decided on a robot design yet. Once you
 have, the pattern from last year (one class per subsystem, wired into `FTC26502OpMode`) is ready
 to extend — see the team's code guide doc for a walkthrough of that pattern.
