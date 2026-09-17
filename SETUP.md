@@ -40,10 +40,23 @@ the project should open and sync in Android Studio without further changes.
 - **New placeholder OpModes** so there's something runnable immediately:
   - `TeleopDrive` — drive-only TeleOp, no scoring controls yet.
   - `AutoDrive` — drives forward a configurable distance and stops, to confirm odometry works.
+- **`MeepMeepTesting` module** — a separate, plain-desktop-Java module (not part of the robot app)
+  that visualizes autonomous paths on your computer without needing the real robot. Open
+  `MeepMeepTesting/src/main/java/com/example/meepmeeptesting/MeepMeepTesting.java` in Android
+  Studio and click Run next to `main()`. It currently mirrors the path in `AutoDrive.java`. The
+  bot size/speed numbers in it were carried over from last year's tuned `MecanumDrive.Params` —
+  update them once the BIOBUZZ chassis is built and re-tuned.
+
+## Recent fix: "unable to find hardware device with name 'pinpoint'"
+
+`MecanumDrive`'s localizer was switched from the GoBilda Pinpoint sensor (which this chassis
+doesn't have installed) to the built-in `DriveLocalizer` — motor encoders + the Control Hub's own
+IMU, no extra sensor required. If a Pinpoint gets added later, see the comment above the
+`localizer = new DriveLocalizer(pose);` line in `MecanumDrive.java` for how to switch back.
 
 ## What's intentionally not here yet
 
-Anything tied to a specific scoring mechanism (an org.firstinspires.ftc.teamcode.Intake-equivalent, a Shooter-equivalent, real
+Anything tied to a specific scoring mechanism (an Intake-equivalent, a Shooter-equivalent, real
 Auto/TeleOp scoring routines) — because the team hasn't decided on a robot design yet. Once you
 have, the pattern from last year (one class per subsystem, wired into `FTC26502OpMode`) is ready
 to extend — see the team's code guide doc for a walkthrough of that pattern.

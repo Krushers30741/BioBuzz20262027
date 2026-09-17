@@ -110,7 +110,7 @@ public final class MecanumDrive {
     public final AccelConstraint defaultAccelConstraint =
             new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
 
-    private static final double FRONT_SCALE = 27.0/25.0;
+    private static final double FRONT_SCALE = 1.0;
     private static final double REAR_SCALE = 1.0;
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
 
