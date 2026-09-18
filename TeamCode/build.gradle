@@ -24,10 +24,15 @@ android {
     }
 }
 
-// FTC Dashboard isn't on Maven Central/Google — it's published here.
 repositories {
+    // FTC Dashboard isn't on Maven Central/Google — it's published here.
     maven {
         url = 'https://maven.brott.dev/'
+    }
+    // Panels isn't on Maven Central either — confirmed against the official
+    // ftcontrol/Panels-Quickstart-Java repo's build.dependencies.gradle.
+    maven {
+        url = 'https://mymaven.bylazar.com/releases'
     }
 }
 
@@ -37,4 +42,9 @@ dependencies {
     // FTC Dashboard — live telemetry graphs + on-the-fly tuning of @Config fields
     // (see TeleopDrive.java) without redeploying code.
     implementation "com.acmerobotics.dashboard:dashboard:0.5.1"
+
+    // Panels (panels.bylazar.com) — a second, more full-featured dashboard: telemetry,
+    // graphs, @Configurable live tuning, OpMode control, and more. Version confirmed
+    // against the official quickstart repo's current build.dependencies.gradle.
+    implementation "com.bylazar:fullpanels:1.0.13"
 }
