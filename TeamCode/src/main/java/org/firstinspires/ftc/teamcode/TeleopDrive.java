@@ -12,7 +12,7 @@ public class TeleopDrive extends FTC26502OpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false, false, false, false);
+        initOpMode(true, false, true,false, false, false);
 
         waitForStart();
         while (opModeIsActive()) {
@@ -22,6 +22,12 @@ public class TeleopDrive extends FTC26502OpMode {
             double str = -gamepad1.left_stick_x;
             double turn = -gamepad1.right_stick_x;
             drive.setDrivePowers(fwd, str, turn);
+
+            if (gamepad1.right_bumper) {
+                intake.setPower(1.0);
+            } else {
+                intake.setPower(0.0);
+            }
 
             telemetry.addData("heading (deg)", Math.toDegrees(drive.localizer.getPose().heading.toDouble()));
             telemetry.update();

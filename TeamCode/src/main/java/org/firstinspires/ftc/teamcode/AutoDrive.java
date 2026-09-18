@@ -27,7 +27,7 @@ public class AutoDrive extends FTC26502OpMode {
         Telemetry dashboardTelemetry = FtcDashboard.getInstance().getTelemetry();
         telemetry = new MultipleTelemetry(telemetry, dashboardTelemetry);
 
-        initOpMode(true, false, false, false, false);
+        initOpMode(true, false, true,false, false, false);
 
         Pose2d startPose = new Pose2d(0, 0, 0);
         drive = new MecanumDrive(hardwareMap, startPose);

@@ -17,10 +17,6 @@
 
 import java.util.regex.Pattern
 
-apply plugin: 'com.android.application'
-63
-
-
 android {
 
     compileSdkVersion 30
@@ -108,6 +104,9 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    packagingOptions {
+        pickFirst '**/*.so'
+    }
     ndkVersion '21.3.6528147'
 }
 

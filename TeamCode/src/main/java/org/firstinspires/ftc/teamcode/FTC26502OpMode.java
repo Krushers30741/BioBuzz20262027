@@ -24,6 +24,8 @@ public abstract class FTC26502OpMode extends LinearOpMode implements Clock {
     protected MecanumDrive drive;
     protected SensorSystem sensors;
     protected VisionSystem vision;
+
+    protected Intake intake;
     protected GoBildaPinpointDriver odo;
     protected boolean blueAlliance;
 
@@ -39,7 +41,7 @@ public abstract class FTC26502OpMode extends LinearOpMode implements Clock {
      * @param useVision    whether to initialize the vision system (AprilTag detection)
      * @param blueAlliance whether the robot is on the blue alliance
      */
-    public void initOpMode(boolean useDrive, boolean useOdo,
+    public void initOpMode(boolean useDrive, boolean useOdo, boolean useIntake,
                             boolean useSensors, boolean useVision,
                             boolean blueAlliance) {
         if (useDrive) {
@@ -53,6 +55,10 @@ public abstract class FTC26502OpMode extends LinearOpMode implements Clock {
 
         if (useVision) {
             vision = new VisionSystem(hardwareMap, telemetry, blueAlliance);
+        }
+
+        if (useIntake) {
+            intake = new Intake(hardwareMap);
         }
 
         if (useOdo) {
