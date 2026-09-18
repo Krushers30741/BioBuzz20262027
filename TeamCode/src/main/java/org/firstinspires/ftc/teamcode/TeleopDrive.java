@@ -73,8 +73,8 @@ public class TeleopDrive extends FTC30741Base {
             double forward = -gamepad1.left_stick_y * slowModeScale;
             double strafe = gamepad1.left_stick_x * slowModeScale;
             double turn = gamepad1.right_stick_x * slowModeScale;
-            drive.driveFieldCentric(forward, strafe, turn);
-
+           // drive.driveFieldCentric(forward, strafe, turn);
+            drive.driveRobotCentric(forward, strafe, turn);
             if (intake != null) {
                 intake.setPower(gamepad1.right_bumper ? 1.0 : 0.0);
             }
@@ -84,6 +84,9 @@ public class TeleopDrive extends FTC30741Base {
             panelsTelemetry.addData("heading (deg)", drive.getHeadingDegrees());
             panelsTelemetry.addData("slow mode", slowModeScale < 1.0 ? "ON" : "off");
             panelsTelemetry.addData("time left (s)", TELEOP_DURATION_SECONDS - now());
+            panelsTelemetry.addData("raw left_stick_x", gamepad1.left_stick_x);
+            panelsTelemetry.addData("raw left_stick_y", gamepad1.left_stick_y);
+            panelsTelemetry.addData("raw right_stick_x", gamepad1.right_stick_x);
             panelsTelemetry.update(telemetry);
         }
     }

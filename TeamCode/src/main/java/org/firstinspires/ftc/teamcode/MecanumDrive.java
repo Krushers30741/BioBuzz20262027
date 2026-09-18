@@ -79,7 +79,34 @@ public class MecanumDrive {
         leftBack.setPower(backLeftPower / max);
         rightBack.setPower(backRightPower / max);
     }
+    /**
+     * Drives the robot relative to the FIELD instead of relative to the robot's current
+     * heading. Reads the IMU heading and rotates the stick input by it before mixing into
+     * the four wheel powers.
+     *
+     * @param forward how much to drive forward/back (-1 to 1; pass -gamepad.left_stick_y)
+     * @param strafe  how much to strafe left/right (-1 to 1; pass gamepad.left_stick_x)
+     * @param turn    how much to rotate (-1 to 1; pass gamepad.right_stick_x)
+     */
+    public void driveRobotCentric(double forward, double strafe, double turn) {
 
+
+        double frontLeftPower = forward + strafe + turn;
+        double frontRightPower = forward - strafe - turn;
+        double backLeftPower = forward - strafe + turn;
+        double backRightPower = forward + strafe - turn;
+
+        // Scale all four down together (never up) so pushing two sticks at once can't push
+        // any wheel's requested power over 1.0 and distort the direction the robot travels.
+        double max = Math.max(1.0, Math.max(
+                Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower)),
+                Math.max(Math.abs(backLeftPower), Math.abs(backRightPower))));
+
+        leftFront.setPower(frontLeftPower / max);
+        rightFront.setPower(frontRightPower / max);
+        leftBack.setPower(backLeftPower / max);
+        rightBack.setPower(backRightPower / max);
+    }
     /**
      * Tells the IMU "whatever direction the robot is facing right now counts as forward."
      * Bind this to a button so a driver can re-zero the heading if the robot got bumped or
