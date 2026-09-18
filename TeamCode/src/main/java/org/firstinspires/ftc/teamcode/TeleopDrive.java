@@ -40,6 +40,8 @@ public class TeleopDrive extends FTC30741Base {
     // Live-tunable from FTC Dashboard or Panels.
     public static double SLOW_MODE_SCALE = 0.4;
 
+    public static double STRAFE_GAIN = 1.3;
+
     // FTC teleop periods are 2:00 (120s). These fire a one-time rumble + LED color change as
     // warnings, instead of checking a driver's own watch/count. Live-tunable.
     public static double WARNING_SECONDS_LEFT = 20.0;
@@ -71,7 +73,7 @@ public class TeleopDrive extends FTC30741Base {
 
             double slowModeScale = gamepad1.left_bumper ? SLOW_MODE_SCALE : 1.0;
             double forward = -gamepad1.left_stick_y * slowModeScale;
-            double strafe = gamepad1.left_stick_x * slowModeScale;
+            double strafe = gamepad1.left_stick_x * slowModeScale * STRAFE_GAIN;
             double turn = gamepad1.right_stick_x * slowModeScale;
            // drive.driveFieldCentric(forward, strafe, turn);
             drive.driveRobotCentric(forward, strafe, turn);
