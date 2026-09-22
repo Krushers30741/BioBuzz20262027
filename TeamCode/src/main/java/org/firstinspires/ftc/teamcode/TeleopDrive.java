@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -89,6 +90,16 @@ public class TeleopDrive extends FTC30741Base {
             panelsTelemetry.addData("raw left_stick_x", gamepad1.left_stick_x);
             panelsTelemetry.addData("raw left_stick_y", gamepad1.left_stick_y);
             panelsTelemetry.addData("raw right_stick_x", gamepad1.right_stick_x);
+            double[] wheelVolocities = drive.getWheelVelocities();
+            double[] wheelCurrents = drive.getWheelCurrents();
+            panelsTelemetry.addData("lf speed (ticks/secs)", wheelVolocities[0]);
+            panelsTelemetry.addData("rf speed (ticks/secs)", wheelVolocities[1]);
+            panelsTelemetry.addData("lb speed (ticks/secs)", wheelVolocities[2]);
+            panelsTelemetry.addData("rb speed (ticks/secs)", wheelVolocities[3]);
+            panelsTelemetry.addData("lf current (a)", wheelCurrents[0]);
+            panelsTelemetry.addData("rf current (a)", wheelCurrents[1]);
+            panelsTelemetry.addData("lb current (a)", wheelCurrents[2]);
+            panelsTelemetry.addData("rb current (a)", wheelCurrents[3]);
             panelsTelemetry.update(telemetry);
         }
     }

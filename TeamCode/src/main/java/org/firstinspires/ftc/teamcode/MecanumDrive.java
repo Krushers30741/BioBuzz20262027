@@ -6,8 +6,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 /**
  * Drives the robot around. Owns the four drive motors and the Control Hub's built-in IMU,
@@ -16,10 +18,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 public class MecanumDrive {
 
+    private final HardwareMap hardwareMap;
     private final DcMotorEx leftFront, leftBack, rightBack, rightFront;
     private final IMU imu;
 
     public MecanumDrive(HardwareMap hw) {
+        this.hardwareMap=hw;
         // TODO: make sure your robot configuration (Driver Station app -> Configure Robot)
         //   has motors with these exact names, or change the names below to match.
         leftFront = hw.get(DcMotorEx.class, "leftFront");
@@ -120,4 +124,31 @@ public class MecanumDrive {
     public double getHeadingDegrees() {
         return Math.toDegrees(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
     }
-}
+    public double[] getWheelVelocities(){
+       return new double[]{
+                leftFront.getVelocity(),
+                rightFront.getVelocity(),
+                leftBack.getVelocity(),
+                rightBack.getVelocity()
+        };
+        }
+    public double[] getWheelCurrents(){
+        return new double[]{
+                leftFront.getCurrent(CurrentUnit.AMPS),
+                rightFront.getCurrent(CurrentUnit.AMPS),
+                leftBack.getCurrent(CurrentUnit.AMPS),
+                rightBack.getCurrent(CurrentUnit.AMPS)
+        };
+    }
+    public double getBatteryVoltage(){
+        double minVoltage = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor :hardwareMap.voltageSensor){
+            double v = sensor.getVoltage();
+            if (v>0&&v<minVoltage){
+                minVoltage = v;
+            }
+        }
+        return minVoltage;
+    }
+    }
+
