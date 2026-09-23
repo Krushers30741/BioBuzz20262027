@@ -61,7 +61,7 @@ public class TeleopDrive extends FTC30741Base {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        initOpMode(true, false);
+        initOpMode(true, true);
 
         panelsTelemetry.debug("Ready - press START");
         panelsTelemetry.update(telemetry);
@@ -79,7 +79,7 @@ public class TeleopDrive extends FTC30741Base {
            // drive.driveFieldCentric(forward, strafe, turn);
             drive.driveRobotCentric(forward, strafe, turn);
             if (intake != null) {
-                intake.setPower(gamepad1.right_bumper ? 1.0 : 0.0);
+                intake.setPower(gamepad1.right_bumper ? 0.75 : 0.0);
             }
 
             checkEndgameWarnings();
