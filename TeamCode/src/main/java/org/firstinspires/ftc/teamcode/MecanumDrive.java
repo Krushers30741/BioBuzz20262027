@@ -68,9 +68,9 @@ public class MecanumDrive {
         double rotatedStrafe = forward * Math.sin(-heading) + strafe * Math.cos(-heading);
 
         double frontLeftPower = rotatedForward + rotatedStrafe + turn;
-        double frontRightPower = rotatedForward - rotatedStrafe - turn;
+        double frontRightPower = rotatedForward + rotatedStrafe - turn;
         double backLeftPower = rotatedForward - rotatedStrafe + turn;
-        double backRightPower = rotatedForward + rotatedStrafe - turn;
+        double backRightPower = rotatedForward - rotatedStrafe - turn;
 
         // Scale all four down together (never up) so pushing two sticks at once can't push
         // any wheel's requested power over 1.0 and distort the direction the robot travels.
@@ -96,9 +96,9 @@ public class MecanumDrive {
 
 
         double frontLeftPower = forward + strafe + turn;
-        double frontRightPower = forward - strafe - turn;
+        double frontRightPower = forward + strafe - turn;
         double backLeftPower = forward - strafe + turn;
-        double backRightPower = forward + strafe - turn;
+        double backRightPower = forward - strafe - turn;
 
         // Scale all four down together (never up) so pushing two sticks at once can't push
         // any wheel's requested power over 1.0 and distort the direction the robot travels.

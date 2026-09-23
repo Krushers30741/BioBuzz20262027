@@ -74,7 +74,7 @@ public class TeleopDrive extends FTC30741Base {
 
             double slowModeScale = gamepad1.left_bumper ? SLOW_MODE_SCALE : 1.0;
             double forward = -gamepad1.left_stick_y * slowModeScale;
-            double strafe = gamepad1.left_stick_x * slowModeScale * STRAFE_GAIN;
+            double strafe = gamepad1.left_stick_x * slowModeScale;
             double turn = gamepad1.right_stick_x * slowModeScale;
            // drive.driveFieldCentric(forward, strafe, turn);
             drive.driveRobotCentric(forward, strafe, turn);
