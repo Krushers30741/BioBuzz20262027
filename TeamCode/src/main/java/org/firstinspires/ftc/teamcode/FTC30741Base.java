@@ -32,6 +32,14 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
         telemetry.update();
     }
 
+    protected void driveForTime(double forward, double strafe, double turn, double seconds) {
+        double endTime = now() + seconds;
+        while (opModeIsActive() && now() < endTime) {
+            drive.driveRobotCentric(forward, strafe, turn);
+        }
+        drive.driveRobotCentric(0, 0, 0);
+    }
+
     /**
      * Returns the current runtime of this OpMode in seconds.
      *
