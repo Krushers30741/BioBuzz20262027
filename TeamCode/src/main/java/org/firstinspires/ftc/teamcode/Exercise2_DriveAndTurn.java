@@ -31,11 +31,11 @@ public class Exercise2_DriveAndTurn extends FTC30741Base {
 
         // TODO 1: Drive straight forward for 1.5 seconds.
         //   Fill in driveForTime(forward, strafe, turn, seconds) with the right values.
-        driveForTime(0, 0, 0, 0);
+        driveForTime(1, 0, 0, 1.5);
 
         // TODO 2: Turn in place for 1 second.
         //   (No forward or strafe motion this time - only turn should be nonzero.)
-        driveForTime(0, 0, 0, 0);
+        driveForTime(0, 0, 1, 1);
 
         telemetry.addLine("Exercise 2 complete!");
         telemetry.update();
