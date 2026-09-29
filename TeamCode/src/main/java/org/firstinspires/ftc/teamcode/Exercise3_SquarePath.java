@@ -35,18 +35,19 @@ public class Exercise3_SquarePath extends FTC30741Base {
         waitForStart();
 
         // TODO 1: Side 1 - drive forward for SECONDS_PER_SIDE.
-        driveForTime(0, 0, 0, 0);
+        driveForTime(1, 0, 0, 0.5);
 
         // TODO 2: Side 2 - strafe right for SECONDS_PER_SIDE.
-        driveForTime(0, 0, 0, 0);
+        driveForTime(0, 1, 0, 0.5);
 
         // TODO 3: Side 3 - drive backward for SECONDS_PER_SIDE.
-        driveForTime(0, 0, 0, 0);
+        driveForTime(-1, 0, 0, 0.5);
 
         // TODO 4: Side 4 - strafe left for SECONDS_PER_SIDE.
-        driveForTime(0, 0, 0, 0);
+        driveForTime(0, 1, 0, -0.5);
 
         telemetry.addLine("Exercise 3 complete! Did the robot end up back near start?");
         telemetry.update();
     }
 }
+//Negative number = left
