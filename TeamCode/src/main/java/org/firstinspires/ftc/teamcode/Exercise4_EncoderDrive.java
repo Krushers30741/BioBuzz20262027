@@ -42,10 +42,10 @@ public class Exercise4_EncoderDrive extends FTC30741Base {
 
         // TODO 1: Loop while the front-left wheel's position (index 0 of the array returned
         //   by drive.getWheelPositions()) is still less than TARGET_TICKS.
-        while (/* TODO: your condition here */ false) {
+        while (drive.getWheelPositions()[0]<TARGET_TICKS) {
 
             // TODO 2: Drive forward. (Same driveRobotCentric call as Exercise 1.)
-            drive.driveRobotCentric(0, 0, 0);
+            drive.driveRobotCentric(1, 0, 0);
 
             // This shows you the live tick count while it's driving - helpful for debugging.
             telemetry.addData("front-left ticks", drive.getWheelPositions()[0]);
@@ -53,6 +53,7 @@ public class Exercise4_EncoderDrive extends FTC30741Base {
         }
 
         // TODO 3: Stop the robot.
+        drive.driveRobotCentric(0, 0, 0);
 
         telemetry.addLine("Exercise 4 complete!");
         telemetry.update();

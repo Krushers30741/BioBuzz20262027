@@ -132,14 +132,23 @@ public class MecanumDrive {
                 rightBack.getVelocity()
         };
         }
-    public double[] getWheelCurrents(){
+
+    public double[] getWheelPositions() {
+        return new double[]{
+                leftFront.getCurrentPosition(),
+                rightFront.getCurrentPosition(),
+                leftBack.getCurrentPosition(),
+                rightBack.getCurrentPosition()
+        };
+    }
+        public double[] getWheelCurrents(){
         return new double[]{
                 leftFront.getCurrent(CurrentUnit.AMPS),
                 rightFront.getCurrent(CurrentUnit.AMPS),
                 leftBack.getCurrent(CurrentUnit.AMPS),
                 rightBack.getCurrent(CurrentUnit.AMPS)
         };
-    }
+        }
     public double getBatteryVoltage(){
         double minVoltage = Double.POSITIVE_INFINITY;
         for (VoltageSensor sensor :hardwareMap.voltageSensor){
