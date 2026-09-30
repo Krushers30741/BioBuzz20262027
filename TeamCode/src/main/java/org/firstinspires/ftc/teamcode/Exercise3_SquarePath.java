@@ -44,7 +44,7 @@ public class Exercise3_SquarePath extends FTC30741Base {
         driveForTime(-1, 0, 0, 0.5);
 
         // TODO 4: Side 4 - strafe left for SECONDS_PER_SIDE.
-        driveForTime(0, 1, 0, -0.5);
+        driveForTime(0, -1, 0, 0.5);
 
         telemetry.addLine("Exercise 3 complete! Did the robot end up back near start?");
         telemetry.update();

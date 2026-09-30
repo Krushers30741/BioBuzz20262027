@@ -53,7 +53,7 @@ public class Exercise4_EncoderDrive extends FTC30741Base {
         }
 
         // TODO 3: Stop the robot.
-        drive.driveRobotCentric(0, 0, 0);
+        //drive.driveRobotCentric(0, 0, 0);
 
         telemetry.addLine("Exercise 4 complete!");
         telemetry.update();
