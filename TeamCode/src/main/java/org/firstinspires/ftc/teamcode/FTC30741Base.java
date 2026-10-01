@@ -14,6 +14,7 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
 
     protected MecanumDrive drive;
     protected Intake intake;
+    protected VisionSystem vision;
 
     /**
      * @param useDrive  whether to build the drivetrain (see {@link MecanumDrive})
@@ -30,6 +31,16 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
 
         telemetry.addLine("Robot Init Complete");
         telemetry.update();
+    }
+
+    /**
+     * Sets up the webcam and AprilTag detector (see {@link VisionSystem}). Call this once, in
+     * addition to {@link #initOpMode(boolean, boolean)}, in any OpMode that needs to see
+     * AprilTags. Kept separate from initOpMode so OpModes that don't use the camera don't pay
+     * for starting it up.
+     */
+    protected void initVision() {
+        vision = new VisionSystem(hardwareMap);
     }
 
     protected void driveForTime(double forward, double strafe, double turn, double seconds) {

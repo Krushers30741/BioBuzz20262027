@@ -31,17 +31,17 @@ public class Exercise4_EncoderDrive extends FTC30741Base {
     // How far to drive, measured in encoder ticks instead of seconds. Ask your coach what a
     // reasonable starting number is for your robot's motors - it depends on the gear ratio.
     private static final double TARGET_TICKS = 1000;
-
     @Override
     public void runOpMode() throws InterruptedException {
         initOpMode(true, false);
-
+        drive.getWheelPositions();
         telemetry.addLine("Exercise 4 ready - press START");
         telemetry.update();
         waitForStart();
 
         // TODO 1: Loop while the front-left wheel's position (index 0 of the array returned
         //   by drive.getWheelPositions()) is still less than TARGET_TICKS.
+
         while (drive.getWheelPositions()[0]<TARGET_TICKS) {
 
             // TODO 2: Drive forward. (Same driveRobotCentric call as Exercise 1.)
