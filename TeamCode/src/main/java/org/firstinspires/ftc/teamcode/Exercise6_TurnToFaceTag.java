@@ -50,7 +50,8 @@ public class Exercise6_TurnToFaceTag extends FTC30741Base {
         //   - we haven't hit giveUpTime yet
         //   - EITHER we don't see the tag yet, OR its bearing is still outside tolerance
         //     (Hint: Math.abs(detection.ftcPose.bearing) > BEARING_TOLERANCE_DEGREES)
-        while (/* TODO: your condition here */ false) {
+        while ((giveUpTime<30) &&
+                ((detection == null) || (Math.abs(detection.ftcPose.bearing) > BEARING_TOLERANCE_DEGREES))) {
 
             detection = vision.findTag(VisionSystem.PRACTICE_TAG_ID);
 
@@ -60,11 +61,12 @@ public class Exercise6_TurnToFaceTag extends FTC30741Base {
                 //   Hint: Math.signum(detection.ftcPose.bearing) gives you -1, 0, or 1.
                 //   Multiply that by TURN_POWER and pass it as the turn argument below.
                 //   Test it - if the robot turns the WRONG way, flip the sign!
-                drive.driveRobotCentric(0, 0, 0);
+
+                drive.driveRobotCentric(0, 0, 0.6);
             } else {
                 // Tag isn't visible right now - stay still instead of spinning blindly and
                 // possibly turning further away from it.
-                drive.driveRobotCentric(0, 0, 0);
+                drive.driveRobotCentric(0, 0, 0.6);
             }
 
             telemetry.addData("tag visible", detection != null);
@@ -75,6 +77,7 @@ public class Exercise6_TurnToFaceTag extends FTC30741Base {
         }
 
         // TODO 3: Stop the robot.
+        drive.driveRobotCentric(0, 0, 0);
 
         telemetry.addLine("Exercise 6 complete!");
         telemetry.update();
