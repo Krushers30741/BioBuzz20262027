@@ -62,11 +62,13 @@ public class Exercise6_TurnToFaceTag extends FTC30741Base {
                 //   Multiply that by TURN_POWER and pass it as the turn argument below.
                 //   Test it - if the robot turns the WRONG way, flip the sign!
 
-                drive.driveRobotCentric(0, 0, 0.6);
+                double turn = Math.signum(detection.ftcPose.bearing) * TURN_POWER;
+
+                drive.driveRobotCentric(0, 0, turn);
             } else {
                 // Tag isn't visible right now - stay still instead of spinning blindly and
                 // possibly turning further away from it.
-                drive.driveRobotCentric(0, 0, 0.6);
+                drive.driveRobotCentric(0, 0, 0);
             }
 
             telemetry.addData("tag visible", detection != null);
