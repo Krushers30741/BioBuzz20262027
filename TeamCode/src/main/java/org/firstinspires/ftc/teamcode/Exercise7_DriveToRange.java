@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
+import java.lang.annotation.Target;
+
 /**
  * EXERCISE 7: Drive to a Set Distance from the Tag
  *
@@ -45,16 +47,17 @@ public class Exercise7_DriveToRange extends FTC30741Base {
         // TODO 1: Loop while: OpMode active, AND not timed out, AND (tag not visible yet OR
         //   its range is still outside tolerance of TARGET_RANGE_INCHES).
         //   Hint: Math.abs(detection.ftcPose.range - TARGET_RANGE_INCHES) > RANGE_TOLERANCE_INCHES
-        while (/* TODO: your condition here */ false) {
+        while (opModeIsActive() && giveUpTime < 30 && Math.abs(detection.ftcPose.range - TARGET_RANGE_INCHES) > RANGE_TOLERANCE_INCHES ) {
 
             detection = vision.findTag(VisionSystem.PRACTICE_TAG_ID);
 
             if (detection != null) {
                 // TODO 2: Drive forward or backward to close the distance.
                 //   Hint: Math.signum(detection.ftcPose.range - TARGET_RANGE_INCHES) gives you
+                double forward= Math.signum(detection.ftcPose.range - TARGET_RANGE_INCHES) * DRIVE_POWER;
                 //   +1 if you're too far away, -1 if you're too close. Multiply that by
                 //   DRIVE_POWER and pass it as the forward argument below.
-                drive.driveRobotCentric(0, 0, 0);
+                drive.driveRobotCentric(forward, 0, 0);
             } else {
                 drive.driveRobotCentric(0, 0, 0);
             }
@@ -66,7 +69,7 @@ public class Exercise7_DriveToRange extends FTC30741Base {
             telemetry.update();
         }
 
-        // TODO 3: Stop the robot.
+        drive.driveRobotCentric(0, 0, 0);
 
         telemetry.addLine("Exercise 7 complete!");
         telemetry.update();
