@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
 /**
  * EXERCISE 5: See the Tag
@@ -36,13 +36,18 @@ public class Exercise5_SeeTheTag extends FTC30741Base {
             // TODO 1: Ask the vision system whether it currently sees the practice tag.
             //   Hint: vision.findTag(int tagId) - the tag ID you want is
             //   VisionSystem.PRACTICE_TAG_ID. Store the result in a variable.
-            AprilTagDetection detection = null; // <-- replace null with the real call
+            AprilTagSingleDetection detection = vision.findTag(VisionSystem.PRACTICE_TAG_ID);
 
             // TODO 2: If detection is NOT null, the tag is visible - show its info.
             //   If it IS null, the tag isn't visible right now - say so instead.
             //   Hint: detection.id, detection.ftcPose.range, detection.ftcPose.bearing,
             //   and detection.ftcPose.yaw are all available once you know detection isn't null.
-            telemetry.addLine("TODO 2: show tag info here");
+            if (detection != null) {
+                telemetry.addLine("detection.id:" + detection.id);
+            }else{
+                telemetry.addLine("the tag isn't visible right now");
+            }
+
 
             telemetry.update();
         }

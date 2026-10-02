@@ -9,6 +9,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
 import java.util.List;
 
@@ -62,14 +63,22 @@ public class VisionSystem {
     /**
      * Looks for one specific tag ID among everything currently visible.
      *
+     * <p>SDK 12.0 note: {@link #getDetections()} can hand back either a plain single-tag
+     * detection or a "cluster" detection (several tags treated as one group) - only the single
+     * kind ({@link AprilTagSingleDetection}) has an .id field, so we check which kind each one
+     * is before looking at its ID.</p>
+     *
      * @param tagId the tag ID to look for (e.g. {@link #PRACTICE_TAG_ID})
-     * @return that tag's detection (with range/bearing/yaw filled in), or null if it isn't
-     *         visible right now
+     * @return that tag's detection (with id and range/bearing/yaw filled in), or null if it
+     *         isn't visible right now
      */
-    public AprilTagDetection findTag(int tagId) {
+    public AprilTagSingleDetection findTag(int tagId) {
         for (AprilTagDetection detection : getDetections()) {
-            if (detection.metadata != null && detection.id == tagId) {
-                return detection;
+            if (detection instanceof AprilTagSingleDetection) {
+                AprilTagSingleDetection single = (AprilTagSingleDetection) detection;
+                if (single.metadata != null && single.id == tagId) {
+                    return single;
+                }
             }
         }
         return null;
