@@ -28,7 +28,8 @@ public class Exercise8_AlignAndReady extends FTC30741Base {
     private static final double RANGE_TOLERANCE_INCHES = 1.0;
     private static final double TURN_POWER = 0.2;
     private static final double DRIVE_POWER = 0.2;
-
+    private static double turnPower = 0.0;
+    private static double forwardPower = 0.0;
     @Override
     public void runOpMode() throws InterruptedException {
         initOpMode(true, false);
@@ -45,7 +46,9 @@ public class Exercise8_AlignAndReady extends FTC30741Base {
         //   bearing AND the range are within tolerance at the same time (or you time out, or
         //   the OpMode stops). Re-use the conditions from Exercise 6 and Exercise 7 - just
         //   combine them with && / || as needed.
-        while (/* TODO: your condition here */ false) {
+        while (
+                ((detection.ftcPose.range==TARGET_RANGE_INCHES)
+                        &&(BEARING_TOLERANCE_DEGREES==detection.ftcPose.bearing))||giveUpTime<30) {
 
             detection = vision.findTag(VisionSystem.PRACTICE_TAG_ID);
 
@@ -53,7 +56,9 @@ public class Exercise8_AlignAndReady extends FTC30741Base {
                 // TODO 2: Compute a turn power AND a forward power this time, the same way you
                 //   did in Exercises 6 and 7 - then pass BOTH into ONE driveRobotCentric call.
                 //   Hint: driveRobotCentric(forwardPower, 0, turnPower)
-                drive.driveRobotCentric(0, 0, 0);
+                double forward= Math.signum
+                        (detection.ftcPose.range - TARGET_RANGE_INCHES) * DRIVE_POWER;
+                drive.driveRobotCentric(forward, 0, 0);
             } else {
                 drive.driveRobotCentric(0, 0, 0);
             }
