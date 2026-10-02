@@ -44,9 +44,6 @@ public class Exercise7_DriveToRange extends FTC30741Base {
         double giveUpTime = now() + 5.0;
         AprilTagDetection detection = vision.findTag(VisionSystem.PRACTICE_TAG_ID);
 
-        // TODO 1: Loop while: OpMode active, AND not timed out, AND (tag not visible yet OR
-        //   its range is still outside tolerance of TARGET_RANGE_INCHES).
-        //   Hint: Math.abs(detection.ftcPose.range - TARGET_RANGE_INCHES) > RANGE_TOLERANCE_INCHES
         while (opModeIsActive() && giveUpTime < 30 && Math.abs(detection.ftcPose.range - TARGET_RANGE_INCHES) > RANGE_TOLERANCE_INCHES ) {
 
             detection = vision.findTag(VisionSystem.PRACTICE_TAG_ID);
