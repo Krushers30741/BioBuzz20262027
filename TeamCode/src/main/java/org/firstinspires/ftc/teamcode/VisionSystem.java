@@ -25,14 +25,12 @@ import java.util.List;
  */
 public class VisionSystem {
 
-    // Before the real BIOBUZZ field tags are confirmed/available, we're using one of FIRST's
-    // own official test tags to practice with - no guessing about size or ID needed. Tag 585
-    // ("Cousteau") is 6 inches, from the official FTC AprilTag testing PDF:
-    // https://ftc-docs.firstinspires.org/en/latest/_downloads/9dee926dd59f7f35e84c2b816c793fea/FTCAprilTagSDK82SamplesExtended.pdf
-    // (That PDF also has tags 583 "Nemo" and 584 "Jonah" at 4 inches, and 586 "Ariel" at 6
-    // inches, in case more than one group wants to test with different tags at once.)
-    public static final int PRACTICE_TAG_ID = 585;
-    public static final double PRACTICE_TAG_SIZE_INCHES = 6.0;
+    // The tag the Exercises aim at. These are the real BIOBUZZ tags from our kit (36h11 family).
+    // Official Hive tag IDs: red 0-7, blue 38-45. Change this to aim at a different tag.
+    public static final int PRACTICE_TAG_ID = 38;
+    // Official BIOBUZZ tags are 3.25 in. squares - MEASURE the black square on our kit tags
+    // and change this if it is different, or range readings will be wrong.
+    public static final double PRACTICE_TAG_SIZE_INCHES = 3.25;
 
     // Must match the resolution the camera was calibrated at (see lens intrinsics below).
     private static final int CAMERA_WIDTH = 1280;
@@ -42,12 +40,18 @@ public class VisionSystem {
     private final VisionPortal visionPortal;
 
     public VisionSystem(HardwareMap hardwareMap) {
-        // Start from the official library for this season's field tags (works once it's
-        // available for BIOBUZZ), and add our own practice tag on top of it.
-        AprilTagLibrary library = new AprilTagLibrary.Builder()
-                .addLibrary(AprilTagGameDatabase.getCurrentGameTagLibrary())
-                .addTag(PRACTICE_TAG_ID, "Practice Tag", PRACTICE_TAG_SIZE_INCHES, DistanceUnit.INCH)
-                .build();
+        // Start from the SDK's official library for this season's field tags.
+        AprilTagLibrary official = AprilTagGameDatabase.getCurrentGameTagLibrary();
+
+        // Our kit has tags 30-45. Add any of them the official library doesn't already know
+        // about (so we never register the same ID twice).
+        AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder().addLibrary(official);
+        for (int id = 30; id <= 45; id++) {
+            if (official.lookupTag(id) == null) {
+                libraryBuilder.addTag(id, "Kit Tag " + id, PRACTICE_TAG_SIZE_INCHES, DistanceUnit.INCH);
+            }
+        }
+        AprilTagLibrary library = libraryBuilder.build();
 
         // Lens calibration values from our 3DF Zephyr calibration (calibration.xml).
         // These are ONLY valid at the resolution we calibrated at (about 1280x720, judging by
