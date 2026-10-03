@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-import java.lang.annotation.Target;
-
 /**
  * EXERCISE 7: Drive to a Set Distance from the Tag
  *
@@ -44,7 +42,16 @@ public class Exercise7_DriveToRange extends FTC30741Base {
         double giveUpTime = now() + 5.0;
         AprilTagDetection detection = vision.findTag(VisionSystem.PRACTICE_TAG_ID);
 
-        while (opModeIsActive() && giveUpTime < 30 && Math.abs(detection.ftcPose.range - TARGET_RANGE_INCHES) > RANGE_TOLERANCE_INCHES ) {
+        // COACH FIX: two bugs in this condition.
+        //  1) detection can still be null here (the tag might not be in view yet when
+        //     this first runs) - detection.ftcPose.range on a null detection crashes the
+        //     whole OpMode with a NullPointerException. Added a detection == null check
+        //     so it just keeps looping (and driving 0,0,0 below) until the tag shows up,
+        //     instead of crashing.
+        //  2) giveUpTime < 30 compared the stop-TIME itself to 30, instead of comparing
+        //     the CURRENT time to it - same bug as Exercise 6. Changed to now() < giveUpTime.
+        while (opModeIsActive() && now() < giveUpTime &&
+                (detection == null || Math.abs(detection.ftcPose.range - TARGET_RANGE_INCHES) > RANGE_TOLERANCE_INCHES)) {
 
             detection = vision.findTag(VisionSystem.PRACTICE_TAG_ID);
 

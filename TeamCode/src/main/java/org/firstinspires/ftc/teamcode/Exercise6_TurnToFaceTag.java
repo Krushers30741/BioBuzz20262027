@@ -50,7 +50,15 @@ public class Exercise6_TurnToFaceTag extends FTC30741Base {
         //   - we haven't hit giveUpTime yet
         //   - EITHER we don't see the tag yet, OR its bearing is still outside tolerance
         //     (Hint: Math.abs(detection.ftcPose.bearing) > BEARING_TOLERANCE_DEGREES)
-        while ((giveUpTime<30) &&
+        // COACH FIX: two bugs here.
+        //  1) opModeIsActive() was missing, so pressing STOP on the Driver Station
+        //     wouldn't break out of this loop right away.
+        //  2) giveUpTime<30 compared the stop-TIME itself to the number 30, instead of
+        //     comparing the CURRENT time to it. Since giveUpTime is only ever a few
+        //     seconds (now()+5.0), "giveUpTime<30" was always true - it never actually
+        //     timed out. Changed to now() < giveUpTime, which is the real "haven't given
+        //     up yet" check.
+        while (opModeIsActive() && now() < giveUpTime &&
                 ((detection == null) || (Math.abs(detection.ftcPose.bearing) > BEARING_TOLERANCE_DEGREES))) {
 
             detection = vision.findTag(VisionSystem.PRACTICE_TAG_ID);

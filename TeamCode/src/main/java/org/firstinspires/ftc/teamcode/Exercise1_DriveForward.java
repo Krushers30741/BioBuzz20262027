@@ -31,7 +31,11 @@ public class Exercise1_DriveForward extends FTC30741Base {
         // TODO 2: Fill in the while loop's condition so it keeps looping UNTIL stopTime.
         //   Hint: it should keep looping as long as the OpMode is still active AND
         //   we haven't reached stopTime yet.
-        while (now() < stopTime){
+        // COACH FIX: this only checked now() < stopTime - it was missing the
+        // opModeIsActive() check the TODO above asked for. Without it, pressing STOP on
+        // the Driver Station doesn't break out of the loop right away; the robot keeps
+        // driving until the timer runs out on its own. Added opModeIsActive() back in.
+        while (opModeIsActive() && now() < stopTime){
 
             // TODO 3: Command the robot to drive straight forward.
             //   drive.driveRobotCentric(forward, strafe, turn) - what values make it go

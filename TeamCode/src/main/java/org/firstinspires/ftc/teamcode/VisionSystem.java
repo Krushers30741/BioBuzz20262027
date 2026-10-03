@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -32,6 +34,10 @@ public class VisionSystem {
     public static final int PRACTICE_TAG_ID = 585;
     public static final double PRACTICE_TAG_SIZE_INCHES = 6.0;
 
+    // Must match the resolution the camera was calibrated at (see lens intrinsics below).
+    private static final int CAMERA_WIDTH = 1280;
+    private static final int CAMERA_HEIGHT = 720;
+
     private final AprilTagProcessor aprilTag;
     private final VisionPortal visionPortal;
 
@@ -43,14 +49,19 @@ public class VisionSystem {
                 .addTag(PRACTICE_TAG_ID, "Practice Tag", PRACTICE_TAG_SIZE_INCHES, DistanceUnit.INCH)
                 .build();
 
+        // Lens calibration values from our 3DF Zephyr calibration (calibration.xml).
+        // These are ONLY valid at the resolution we calibrated at (about 1280x720, judging by
+        // cx/cy) - if you change CAMERA_WIDTH/CAMERA_HEIGHT below, you must recalibrate.
         aprilTag = new AprilTagProcessor.Builder()
                 .setTagLibrary(library)
+                .setLensIntrinsics(925.919086365, 925.919086365, 656.336036235, 369.441035915)
                 .build();
 
         // TODO: make sure your robot configuration (Driver Station app -> Configure Robot) has
         //   a webcam named exactly "Webcam 1", or change the name below to match.
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
                 .addProcessor(aprilTag)
                 .build();
     }

@@ -34,7 +34,9 @@ public class Exercise4_EncoderDrive extends FTC30741Base {
     @Override
     public void runOpMode() throws InterruptedException {
         initOpMode(true, false);
-        drive.getWheelPositions();
+        // COACH FIX: removed a leftover drive.getWheelPositions() call that was here -
+        // it read the encoders and threw the result away without using it, so it didn't
+        // actually do anything. The real reads happen below, where the result is used.
         telemetry.addLine("Exercise 4 ready - press START");
         telemetry.update();
         waitForStart();
@@ -53,7 +55,10 @@ public class Exercise4_EncoderDrive extends FTC30741Base {
         }
 
         // TODO 3: Stop the robot.
-        //drive.driveRobotCentric(0, 0, 0);
+        // COACH FIX: this line was commented out, so the robot never actually got a stop
+        // command after the loop - it would just coast at full power into whatever came
+        // next (or rely on the OpMode ending to cut the motors). Uncommented it.
+        drive.driveRobotCentric(0, 0, 0);
 
         telemetry.addLine("Exercise 4 complete!");
         telemetry.update();
