@@ -52,6 +52,7 @@ public class Exercise5_SeeTheTag extends FTC30741Base {
             // COACH DEBUG: shows whether the camera is actually streaming, and which tag IDs it
             // sees at all - helps tell "no camera image" apart from "wrong tag ID".
             telemetry.addData("camera state", vision.getCameraState());
+            telemetry.addData("camera FPS", vision.getFps());
             telemetry.addData("tag IDs seen", vision.getSeenIds());
             telemetry.addData("looking for ID", VisionSystem.PRACTICE_TAG_ID);
             telemetry.update();

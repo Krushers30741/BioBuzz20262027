@@ -69,6 +69,10 @@ public class VisionSystem {
                 .addProcessor(aprilTag)
                 .build();
 
+        // Lower decimation = the detector looks at more detail, so it can find small tags (ours are
+        // 3.25 in.) from farther away. Default is 3; 2 is a good balance of range and speed.
+        aprilTag.setDecimation(2);
+
         // Show the camera on the Driver Station ("Camera Stream" in the ... menu) and on FTC
         // Dashboard - same as the Camera Frame Capture utility does. Without this, the stream
         // doesn't appear for OpModes that use VisionSystem.
@@ -108,6 +112,11 @@ public class VisionSystem {
     /** Camera status, e.g. STREAMING. Anything else (or an error) means the camera isn't delivering images. */
     public String getCameraState() {
         return String.valueOf(visionPortal.getCameraState());
+    }
+
+    /** Frames per second the camera is delivering. Near 0 means images aren't arriving. */
+    public float getFps() {
+        return visionPortal.getFps();
     }
 
     /** IDs of every tag currently seen, for debugging (includes tags we have no size info for). */
