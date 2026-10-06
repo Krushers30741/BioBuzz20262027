@@ -34,14 +34,19 @@ public class VisionSystem {
     // and change this if it is different, or range readings will be wrong.
     public static final double PRACTICE_TAG_SIZE_INCHES = 3.25;
 
-    // Must match the resolution the camera was calibrated at (see lens intrinsics below).
-    private static final int CAMERA_WIDTH = 1280;
-    private static final int CAMERA_HEIGHT = 720;
+    // Camera resolution. The lens calibration below was done at 1280x720. Running at 640x360
+    // (exactly half, same 16:9 shape) keeps the same field of view, so the calibration numbers
+    // are simply scaled by CAMERA_WIDTH / 1280. 1280x720 was too heavy for the Control Hub
+    // (camera FPS read 0), so we run at half size. Keep the 16:9 shape if you change this.
+    private static final int CAMERA_WIDTH = 640;
+    private static final int CAMERA_HEIGHT = 360;
+    private static final double CALIBRATION_WIDTH = 1280.0;
 
     private final AprilTagProcessor aprilTag;
     private final VisionPortal visionPortal;
 
     public VisionSystem(HardwareMap hardwareMap) {
+        final double SCALE = CAMERA_WIDTH / CALIBRATION_WIDTH;
         // Start from the SDK's official library for this season's field tags.
         AprilTagLibrary official = AprilTagGameDatabase.getCurrentGameTagLibrary();
 
@@ -52,11 +57,13 @@ public class VisionSystem {
         AprilTagLibrary library = libraryBuilder.build();
 
         // Lens calibration values from our 3DF Zephyr calibration (calibration.xml).
-        // These are ONLY valid at the resolution we calibrated at (about 1280x720, judging by
-        // cx/cy) - if you change CAMERA_WIDTH/CAMERA_HEIGHT below, you must recalibrate.
+        // Measured at 1280x720; scaled by SCALE for the resolution we actually run at.
+        // Only valid for a 16:9 resolution - a different shape (like 640x480) needs recalibrating.
         aprilTag = new AprilTagProcessor.Builder()
                 .setTagLibrary(library)
-                .setLensIntrinsics(925.919086365, 925.919086365, 656.336036235, 369.441035915)
+                .setLensIntrinsics(
+                        925.919086365 * SCALE, 925.919086365 * SCALE,
+                        656.336036235 * SCALE, 369.441035915 * SCALE)
                 .build();
 
         // TODO: make sure your robot configuration (Driver Station app -> Configure Robot) has
