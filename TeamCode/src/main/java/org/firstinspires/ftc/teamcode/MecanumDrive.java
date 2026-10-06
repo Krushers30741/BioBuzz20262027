@@ -49,7 +49,6 @@ public class MecanumDrive {
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
     }
-
     /**
      * Drives the robot relative to the FIELD instead of relative to the robot's current
      * heading. Reads the IMU heading and rotates the stick input by it before mixing into

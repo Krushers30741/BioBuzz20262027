@@ -46,11 +46,7 @@ public class VisionSystem {
         // Our kit has tags 30-45. Add any of them the official library doesn't already know
         // about (so we never register the same ID twice).
         AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder().addLibrary(official);
-        for (int id = 30; id <= 45; id++) {
-            if (official.lookupTag(id) == null) {
-                libraryBuilder.addTag(id, "Kit Tag " + id, PRACTICE_TAG_SIZE_INCHES, DistanceUnit.INCH);
-            }
-        }
+
         AprilTagLibrary library = libraryBuilder.build();
 
         // Lens calibration values from our 3DF Zephyr calibration (calibration.xml).
