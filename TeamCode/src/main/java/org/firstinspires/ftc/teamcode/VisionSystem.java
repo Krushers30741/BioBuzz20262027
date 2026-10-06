@@ -34,13 +34,18 @@ public class VisionSystem {
     // and change this if it is different, or range readings will be wrong.
     public static final double PRACTICE_TAG_SIZE_INCHES = 3.25;
 
-    // Camera resolution. The lens calibration below was done at 1280x720. Running at 640x360
-    // (exactly half, same 16:9 shape) keeps the same field of view, so the calibration numbers
-    // are simply scaled by CAMERA_WIDTH / 1280. 1280x720 was too heavy for the Control Hub
-    // (camera FPS read 0), so we run at half size. Keep the 16:9 shape if you change this.
-    private static final int CAMERA_WIDTH = 640;
-    private static final int CAMERA_HEIGHT = 360;
+    // Camera resolution - the one our camera is known to work at (640x360 is NOT supported in
+    // YUY2 on this camera) and the one the lens calibration was done at. Don't change without
+    // recalibrating.
+    private static final int CAMERA_WIDTH = 1280;
+    private static final int CAMERA_HEIGHT = 720;
     private static final double CALIBRATION_WIDTH = 1280.0;
+
+    // TEMPORARY DEBUG SWITCH: set to false to run the camera with NO AprilTag detector attached
+    // (exactly like the Camera Frame Capture utility). If the stream and camera FPS work with it
+    // false but not true, the AprilTag detector is what's stopping the camera. Set back to true
+    // when done.
+    private static final boolean ATTACH_APRILTAG = true;
 
     private final AprilTagProcessor aprilTag;
     private final VisionPortal visionPortal;
@@ -68,13 +73,15 @@ public class VisionSystem {
 
         // TODO: make sure your robot configuration (Driver Station app -> Configure Robot) has
         //   a webcam named exactly "Webcam 1", or change the name below to match.
-        visionPortal = new VisionPortal.Builder()
+        VisionPortal.Builder portalBuilder = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
                 // Same stream format the Camera Frame Capture utility uses (it works with this camera).
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .addProcessor(aprilTag)
-                .build();
+                .setStreamFormat(VisionPortal.StreamFormat.YUY2);
+        if (ATTACH_APRILTAG) {
+            portalBuilder.addProcessor(aprilTag);
+        }
+        visionPortal = portalBuilder.build();
 
         // Lower decimation = the detector looks at more detail, so it can find small tags (ours are
         // 3.25 in.) from farther away. Default is 3; 2 is a good balance of range and speed.
