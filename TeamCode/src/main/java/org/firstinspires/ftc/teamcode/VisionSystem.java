@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
@@ -62,8 +64,16 @@ public class VisionSystem {
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
+                // Same stream format the Camera Frame Capture utility uses (it works with this camera).
+                .setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .addProcessor(aprilTag)
                 .build();
+
+        // Show the camera on the Driver Station ("Camera Stream" in the ... menu) and on FTC
+        // Dashboard - same as the Camera Frame Capture utility does. Without this, the stream
+        // doesn't appear for OpModes that use VisionSystem.
+        CameraStreamServer.getInstance().setSource(visionPortal);
+        FtcDashboard.getInstance().startCameraStream(visionPortal, 30);
     }
 
     /** Every AprilTag the camera can currently see that it also recognizes (has size info for). */
@@ -93,5 +103,28 @@ public class VisionSystem {
             }
         }
         return null;
+    }
+
+    /** Camera status, e.g. STREAMING. Anything else (or an error) means the camera isn't delivering images. */
+    public String getCameraState() {
+        return String.valueOf(visionPortal.getCameraState());
+    }
+
+    /** IDs of every tag currently seen, for debugging (includes tags we have no size info for). */
+    public String getSeenIds() {
+        StringBuilder sb = new StringBuilder();
+        for (AprilTagDetection d : getDetections()) {
+            if (d instanceof AprilTagSingleDetection) {
+                sb.append(((AprilTagSingleDetection) d).id).append(' ');
+            }
+        }
+        return sb.length() == 0 ? "none" : sb.toString().trim();
+    }
+
+    /** Call when the OpMode ends, so the camera and stream are released for the next OpMode. */
+    public void close() {
+        CameraStreamServer.getInstance().setSource(null);
+        FtcDashboard.getInstance().stopCameraStream();
+        visionPortal.close();
     }
 }

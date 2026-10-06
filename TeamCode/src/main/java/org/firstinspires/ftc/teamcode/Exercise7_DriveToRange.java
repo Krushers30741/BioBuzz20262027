@@ -77,5 +77,8 @@ public class Exercise7_DriveToRange extends FTC30741Base {
 
         telemetry.addLine("Exercise 7 complete!");
         telemetry.update();
+
+        // Release the camera and its stream so the next OpMode can use them.
+        vision.close();
     }
 }

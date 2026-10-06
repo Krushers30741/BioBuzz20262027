@@ -104,5 +104,8 @@ public class Exercise8_AlignAndReady extends FTC30741Base {
 
         telemetry.addLine("READY TO SHOOT");
         telemetry.update();
+
+        // Release the camera and its stream so the next OpMode can use them.
+        vision.close();
     }
 }
