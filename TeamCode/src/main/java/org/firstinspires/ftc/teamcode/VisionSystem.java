@@ -55,18 +55,9 @@ public class VisionSystem {
         // Start from the SDK's official library for this season's field tags.
         AprilTagLibrary official = AprilTagGameDatabase.getCurrentGameTagLibrary();
 
-        // The SDK's built-in library may not include the BIOBUZZ Hive tags yet. Without a tag's
-        // size in the library, the detector can see the tag but can't measure range/bearing, so
-        // findTag() skips it. Fill any gap with the official BIOBUZZ tags: IDs 0-7 (red Hive) and
-        // 38-45 (blue Hive), 3.25 in. - and never add an ID the library already has.
-        AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder().addLibrary(official);
-        for (int id = 0; id <= 45; id++) {
-            boolean isHiveTag = (id <= 7) || (id >= 38);
-            if (isHiveTag && official.lookupTag(id) == null) {
-                libraryBuilder.addTag(id, "BIOBUZZ Tag " + id, 3.25, DistanceUnit.INCH);
-            }
-        }
-        AprilTagLibrary library = libraryBuilder.build();
+        // The SDK's library already has the BIOBUZZ tags - trying to add one again throws
+        // "attempting to add a tag that already exists" - so use it as is.
+        AprilTagLibrary library = official;
 
         // Lens calibration values from our 3DF Zephyr calibration (calibration.xml).
         // Measured at 1280x720; scaled by SCALE for the resolution we actually run at.
@@ -140,13 +131,21 @@ public class VisionSystem {
         return visionPortal.getFps();
     }
 
-    /** IDs of every tag currently seen, for debugging (includes tags we have no size info for). */
+    /**
+     * Debug text describing every detection the camera reports: its type, ID, and whether it has
+     * size info (metadata) and a measured pose (range/bearing). Shows exactly why findTag() would
+     * or wouldn't return a tag.
+     */
     public String getSeenIds() {
         StringBuilder sb = new StringBuilder();
         for (AprilTagDetection d : getDetections()) {
+            sb.append(d.getClass().getSimpleName()).append('[');
             if (d instanceof AprilTagSingleDetection) {
-                sb.append(((AprilTagSingleDetection) d).id).append(' ');
+                AprilTagSingleDetection single = (AprilTagSingleDetection) d;
+                sb.append("id=").append(single.id).append(' ');
+                sb.append("metadata=").append(single.metadata != null ? "yes" : "NO").append(' ');
             }
+            sb.append("pose=").append(d.ftcPose != null ? "yes" : "NO").append("] ");
         }
         return sb.length() == 0 ? "none" : sb.toString().trim();
     }
