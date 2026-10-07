@@ -55,10 +55,17 @@ public class VisionSystem {
         // Start from the SDK's official library for this season's field tags.
         AprilTagLibrary official = AprilTagGameDatabase.getCurrentGameTagLibrary();
 
-        // Our kit has tags 30-45. Add any of them the official library doesn't already know
-        // about (so we never register the same ID twice).
+        // The SDK's built-in library may not include the BIOBUZZ Hive tags yet. Without a tag's
+        // size in the library, the detector can see the tag but can't measure range/bearing, so
+        // findTag() skips it. Fill any gap with the official BIOBUZZ tags: IDs 0-7 (red Hive) and
+        // 38-45 (blue Hive), 3.25 in. - and never add an ID the library already has.
         AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder().addLibrary(official);
-
+        for (int id = 0; id <= 45; id++) {
+            boolean isHiveTag = (id <= 7) || (id >= 38);
+            if (isHiveTag && official.lookupTag(id) == null) {
+                libraryBuilder.addTag(id, "BIOBUZZ Tag " + id, 3.25, DistanceUnit.INCH);
+            }
+        }
         AprilTagLibrary library = libraryBuilder.build();
 
         // Lens calibration values from our 3DF Zephyr calibration (calibration.xml).
