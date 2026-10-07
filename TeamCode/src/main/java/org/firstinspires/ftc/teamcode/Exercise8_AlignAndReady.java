@@ -82,7 +82,12 @@ public class Exercise8_AlignAndReady extends FTC30741Base {
                 // (bearing) correction from Exercise 6 was missing entirely, so the robot
                 // would drive to the right distance but never actually turn to face the
                 // tag. Added the turn calculation back and passed both into one call.
-                double turn = Math.signum(detection.ftcPose.bearing) * TURN_POWER;
+                // COACH FIX: the sign was flipped. ftcPose.bearing is POSITIVE when the tag is to
+                // the robot's LEFT, but in our MecanumDrive a POSITIVE turn spins the robot RIGHT
+                // (left wheels forward, right wheels backward). So to turn toward the tag we need
+                // the opposite sign - hence the minus. (If your robot still turns away from the
+                // tag, remove the minus; that would mean the motors are wired the other way.)
+                double turn = -Math.signum(detection.ftcPose.bearing) * TURN_POWER;
                 double forward = Math.signum(detection.ftcPose.range - TARGET_RANGE_INCHES) * DRIVE_POWER;
                 drive.driveRobotCentric(forward, 0, turn);
             } else {

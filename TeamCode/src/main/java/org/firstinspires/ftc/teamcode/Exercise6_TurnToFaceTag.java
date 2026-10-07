@@ -70,7 +70,12 @@ public class Exercise6_TurnToFaceTag extends FTC30741Base {
                 //   Multiply that by TURN_POWER and pass it as the turn argument below.
                 //   Test it - if the robot turns the WRONG way, flip the sign!
 
-                double turn = Math.signum(detection.ftcPose.bearing) * TURN_POWER;
+                // COACH FIX: the sign was flipped. ftcPose.bearing is POSITIVE when the tag is to
+                // the robot's LEFT, but in our MecanumDrive a POSITIVE turn spins the robot RIGHT
+                // (left wheels forward, right wheels backward). So to turn toward the tag we need
+                // the opposite sign - hence the minus. (If your robot still turns away from the
+                // tag, remove the minus; that would mean the motors are wired the other way.)
+                double turn = -Math.signum(detection.ftcPose.bearing) * TURN_POWER;
 
                 drive.driveRobotCentric(0, 0, turn);
             } else {
