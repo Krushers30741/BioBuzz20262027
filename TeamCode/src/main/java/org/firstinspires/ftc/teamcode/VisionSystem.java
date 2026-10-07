@@ -45,7 +45,7 @@ public class VisionSystem {
     // (exactly like the Camera Frame Capture utility). If the stream and camera FPS work with it
     // false but not true, the AprilTag detector is what's stopping the camera. Set back to true
     // when done.
-    private static final boolean ATTACH_APRILTAG = true;
+    private static final boolean ATTACH_APRILTAG = false;
 
     private final AprilTagProcessor aprilTag;
     private final VisionPortal visionPortal;
