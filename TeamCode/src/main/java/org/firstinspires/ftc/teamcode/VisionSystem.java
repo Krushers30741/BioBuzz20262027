@@ -12,6 +12,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
+import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
@@ -57,7 +58,14 @@ public class VisionSystem {
 
         // The SDK's library already has the BIOBUZZ tags - trying to add one again throws
         // "attempting to add a tag that already exists" - so use it as is.
-        AprilTagLibrary library = official;
+        // Rename each tag to include its ID (e.g. "BLUE AUDIENCE 38") so the label drawn on the
+        // camera stream shows exactly which tag it is. Same tags and sizes, just a clearer name.
+        AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder();
+        for (AprilTagMetadata tag : official.getAllTags()) {
+            libraryBuilder.addTag(new AprilTagMetadata(
+                    tag.id, tag.name + " " + tag.id, tag.tagsize, tag.distanceUnit));
+        }
+        AprilTagLibrary library = libraryBuilder.build();
 
         // Lens calibration values from our 3DF Zephyr calibration (calibration.xml).
         // Measured at 1280x720; scaled by SCALE for the resolution we actually run at.

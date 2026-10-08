@@ -15,7 +15,7 @@ public class Intake {
     public Intake(HardwareMap hardwareMap) {
         // TODO: make sure your hardware config has a motor with this name (or change it below)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "Intake"); //Expansion Hub 0
     }
 
     public void setPower(double power) {

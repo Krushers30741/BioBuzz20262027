@@ -26,10 +26,10 @@ public class MecanumDrive {
         this.hardwareMap=hw;
         // TODO: make sure your robot configuration (Driver Station app -> Configure Robot)
         //   has motors with these exact names, or change the names below to match.
-        leftFront = hw.get(DcMotorEx.class, "leftFront");
-        leftBack = hw.get(DcMotorEx.class, "leftBack");
-        rightBack = hw.get(DcMotorEx.class, "rightBack");
-        rightFront = hw.get(DcMotorEx.class, "rightFront");
+        leftFront = hw.get(DcMotorEx.class, "leftFront"); //Expansion Hub 1
+        leftBack = hw.get(DcMotorEx.class, "leftBack"); //Expansion Hub 3
+        rightBack = hw.get(DcMotorEx.class, "rightBack");//Control Hub 1
+        rightFront = hw.get(DcMotorEx.class, "rightFront");//Control Hub 0
 
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
