@@ -70,6 +70,10 @@ public class Exercise7_DriveToRange extends FTC30741Base {
             if (detection != null) {
                 telemetry.addData("range (in)", detection.ftcPose.range);
             }
+            // COACH DEBUG: what the camera sees, even when it isn't the tag we want.
+            telemetry.addData("looking for ID", VisionSystem.PRACTICE_TAG_ID);
+            telemetry.addData("tags seen", vision.getSeenIds());
+            telemetry.addData("camera", vision.getCameraState() + " @ " + vision.getFps() + " fps");
             telemetry.update();
         }
 

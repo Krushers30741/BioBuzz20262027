@@ -108,8 +108,10 @@ public class VisionSystem {
         visionPortal = portalBuilder.build();
 
         // Lower decimation = the detector looks at more detail, so it can find small tags (ours are
-        // 3.25 in.) from farther away. Default is 3; 2 is a good balance of range and speed.
-        aprilTag.setDecimation(1);  // TEST: 1 = most detail (slower). Was 2.
+        // 3.25 in.) from farther away. Default is 3. At 640x480 we MUST use 1: with 2 the detector
+        // does not see our tags at all (tested). 1 at 640x480 is about the same amount of work as
+        // 2 at 1280x720.
+        aprilTag.setDecimation(1);
 
         // Show the camera on the Driver Station ("Camera Stream" in the ... menu) and on FTC
         // Dashboard - same as the Camera Frame Capture utility does. Without this, the stream
