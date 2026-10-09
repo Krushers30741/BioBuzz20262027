@@ -73,8 +73,8 @@ public class VisionSystem {
         aprilTag = new AprilTagProcessor.Builder()
                 .setTagLibrary(library)
                 .setLensIntrinsics(
-                        925.919086365 * SCALE, 925.919086365 * SCALE,
-                        656.336036235 * SCALE, 369.441035915 * SCALE)
+                        902.450747597 * SCALE, 902.450747597 * SCALE,
+                        633.887792793 * SCALE, 361.131399436 * SCALE)
                 .build();
 
         // TODO: make sure your robot configuration (Driver Station app -> Configure Robot) has

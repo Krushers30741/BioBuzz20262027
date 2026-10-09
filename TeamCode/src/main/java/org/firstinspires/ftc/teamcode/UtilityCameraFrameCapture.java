@@ -21,9 +21,10 @@ public class UtilityCameraFrameCapture extends LinearOpMode
     final boolean USING_WEBCAM = true;
     final BuiltinCameraDirection INTERNAL_CAM_DIR = BuiltinCameraDirection.BACK;
 
-    // Change these from 640x480 to 320x240 to see if the feed wakes up
-    final int RESOLUTION_WIDTH = 1280;
-    final int RESOLUTION_HEIGHT = 720;
+    // MUST match CAMERA_WIDTH/CAMERA_HEIGHT and the stream format in VisionSystem.java,
+    // so calibration photos are taken in exactly the mode the robot uses.
+    final int RESOLUTION_WIDTH = 640;
+    final int RESOLUTION_HEIGHT = 480;
    // final int RESOLUTION_WIDTH = 640;
     //final int RESOLUTION_HEIGHT = 480;
 
@@ -42,7 +43,7 @@ public class UtilityCameraFrameCapture extends LinearOpMode
             portal = new VisionPortal.Builder()
                     .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                     .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
-                    .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+                    .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                     .build();
 
         }
@@ -51,7 +52,7 @@ public class UtilityCameraFrameCapture extends LinearOpMode
             portal = new VisionPortal.Builder()
                     .setCamera(INTERNAL_CAM_DIR)
                     .setCameraResolution(new Size(RESOLUTION_WIDTH, RESOLUTION_HEIGHT))
-                    .setStreamFormat(VisionPortal.StreamFormat.YUY2)
+                    .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                     .build();
         }
         // Route the stream directly to FTC Dashboard (30 Max FPS)
