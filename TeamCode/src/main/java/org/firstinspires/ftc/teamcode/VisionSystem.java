@@ -88,7 +88,7 @@ public class VisionSystem {
 
         // Lower decimation = the detector looks at more detail, so it can find small tags (ours are
         // 3.25 in.) from farther away. Default is 3; 2 is a good balance of range and speed.
-        aprilTag.setDecimation(2);
+        aprilTag.setDecimation(1);  // TEST: 1 = most detail (slower). Was 2.
 
         // Show the camera on the Driver Station ("Camera Stream" in the ... menu) and on FTC
         // Dashboard - same as the Camera Frame Capture utility does. Without this, the stream

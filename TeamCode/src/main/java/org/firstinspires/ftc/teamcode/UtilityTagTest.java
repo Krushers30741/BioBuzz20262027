@@ -26,6 +26,8 @@ import java.util.Locale;
  *   B = AprilTag detector,    1280x720, YUY2
  *   C = AprilTag detector,     640x480, YUY2
  *   D = AprilTag detector,    1280x720, MJPEG
+ *   E = AprilTag detector,     640x480, MJPEG, decimation 2   (left bumper)
+ *   F = AprilTag detector,     640x480, MJPEG, decimation 1   (right bumper)
  *
  * It starts on A. For each setup: open Camera Stream, wave a hand in front of the lens, and note
  * whether it is live or black and what the camera FPS says.
@@ -41,17 +43,20 @@ public class UtilityTagTest extends LinearOpMode {
     public void runOpMode() {
         startSetup('A');
 
-        boolean lastA = false, lastB = false, lastX = false, lastY = false;
+        boolean lastA = false, lastB = false, lastX = false, lastY = false, lastLB = false, lastRB = false;
 
         while (!isStopRequested()) {
             boolean a = gamepad1.a, b = gamepad1.b, x = gamepad1.x, y = gamepad1.y;
+            boolean lb = gamepad1.left_bumper, rb = gamepad1.right_bumper;
             if (a && !lastA) startSetup('A');
             if (b && !lastB) startSetup('B');
             if (x && !lastX) startSetup('C');   // X button = setup C
             if (y && !lastY) startSetup('D');
-            lastA = a; lastB = b; lastX = x; lastY = y;
+            if (lb && !lastLB) startSetup('E');
+            if (rb && !lastRB) startSetup('F');
+            lastA = a; lastB = b; lastX = x; lastY = y; lastLB = lb; lastRB = rb;
 
-            telemetry.addLine("Buttons: A=no detector | B=detector 1280x720 | X=detector 640x480 | Y=detector MJPEG");
+            telemetry.addLine("Buttons: A=no detector | B=detector 1280x720 | X=detector 640x480 | Y=detector MJPEG 1280x720 | LB=640x480 MJPEG dec2 | RB=640x480 MJPEG dec1");
             telemetry.addData("Current setup", current);
             telemetry.addData("Camera state", portal.getCameraState());
             telemetry.addData("Camera FPS", portal.getFps());
@@ -69,11 +74,14 @@ public class UtilityTagTest extends LinearOpMode {
         int w = 1280, h = 720;
         VisionPortal.StreamFormat format = VisionPortal.StreamFormat.YUY2;
         boolean detector = true;
+        int decimation = 3;   // SDK default
         switch (which) {
             case 'A': detector = false; current = "A: no detector, 1280x720, YUY2"; break;
             case 'B': current = "B: detector, 1280x720, YUY2"; break;
             case 'C': w = 640; h = 480; current = "C: detector, 640x480, YUY2"; break;
             case 'D': format = VisionPortal.StreamFormat.MJPEG; current = "D: detector, 1280x720, MJPEG"; break;
+            case 'E': w = 640; h = 480; format = VisionPortal.StreamFormat.MJPEG; decimation = 2; current = "E: detector, 640x480, MJPEG, decimation 2"; break;
+            case 'F': w = 640; h = 480; format = VisionPortal.StreamFormat.MJPEG; decimation = 1; current = "F: detector, 640x480, MJPEG, decimation 1"; break;
         }
 
         VisionPortal.Builder builder = new VisionPortal.Builder()
@@ -85,6 +93,7 @@ public class UtilityTagTest extends LinearOpMode {
             aprilTag = new AprilTagProcessor.Builder()
                     .setTagLibrary(AprilTagGameDatabase.getCurrentGameTagLibrary())
                     .build();
+            aprilTag.setDecimation(decimation);
             builder.addProcessor(aprilTag);
         }
 
