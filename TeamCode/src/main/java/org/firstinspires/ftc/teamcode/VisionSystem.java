@@ -30,7 +30,7 @@ public class VisionSystem {
 
     // The tag the Exercises aim at. These are the real BIOBUZZ tags from our kit (36h11 family).
     // Official Hive tag IDs: red 0-7, blue 38-45. Change this to aim at a different tag.
-    public static final int PRACTICE_TAG_ID = 38;
+    public static final int PRACTICE_TAG_ID = 39;
     // Official BIOBUZZ tags are 3.25 in. squares - MEASURE the black square on our kit tags
     // and change this if it is different, or range readings will be wrong.
     public static final double PRACTICE_TAG_SIZE_INCHES = 3.25;
@@ -38,8 +38,8 @@ public class VisionSystem {
     // Camera resolution - the one our camera is known to work at (640x360 is NOT supported in
     // YUY2 on this camera) and the one the lens calibration was done at. Don't change without
     // recalibrating.
-    private static final int CAMERA_WIDTH = 1280;
-    private static final int CAMERA_HEIGHT = 720;
+    private static final int CAMERA_WIDTH = 640;
+    private static final int CAMERA_HEIGHT = 480;
     private static final double CALIBRATION_WIDTH = 1280.0;
 
     // TEMPORARY DEBUG SWITCH: set to false to run the camera with NO AprilTag detector attached
@@ -83,7 +83,7 @@ public class VisionSystem {
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setCameraResolution(new Size(CAMERA_WIDTH, CAMERA_HEIGHT))
                 // Same stream format the Camera Frame Capture utility uses (it works with this camera).
-                .setStreamFormat(VisionPortal.StreamFormat.YUY2);
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG);  //was YUY2
         if (ATTACH_APRILTAG) {
             portalBuilder.addProcessor(aprilTag);
         }

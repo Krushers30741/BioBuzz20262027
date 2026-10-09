@@ -28,7 +28,7 @@ public class Exercise6_TurnToFaceTag extends FTC30741Base {
 
     // How hard to turn while correcting. Keep this small - a slow, controlled turn is much
     // easier to stop accurately than a fast one.
-    private static final double TURN_POWER = 0.2;
+    private static final double TURN_POWER = .2;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -85,6 +85,7 @@ public class Exercise6_TurnToFaceTag extends FTC30741Base {
             }
 
             telemetry.addData("tag visible", detection != null);
+            telemetry.addLine(vision.getSeenIds());
             if (detection != null) {
                 telemetry.addData("bearing", detection.ftcPose.bearing);
             }
