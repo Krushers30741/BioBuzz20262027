@@ -35,12 +35,10 @@ public class VisionSystem {
     // and change this if it is different, or range readings will be wrong.
     public static final double PRACTICE_TAG_SIZE_INCHES = 3.25;
 
-    // Camera resolution - the one our camera is known to work at (640x360 is NOT supported in
-    // YUY2 on this camera) and the one the lens calibration was done at. Don't change without
-    // recalibrating.
+    // Camera resolution - the one the lens calibration below was done at (640x480, MJPEG).
+    // Don't change without recalibrating.
     private static final int CAMERA_WIDTH = 640;
     private static final int CAMERA_HEIGHT = 480;
-    private static final double CALIBRATION_WIDTH = 1280.0;
 
     // TEMPORARY DEBUG SWITCH: set to false to run the camera with NO AprilTag detector attached
     // (exactly like the Camera Frame Capture utility). If the stream and camera FPS work with it
@@ -52,7 +50,6 @@ public class VisionSystem {
     private final VisionPortal visionPortal;
 
     public VisionSystem(HardwareMap hardwareMap) {
-        final double SCALE = CAMERA_WIDTH / CALIBRATION_WIDTH;
         // Start from the SDK's official library for this season's field tags.
         AprilTagLibrary official = AprilTagGameDatabase.getCurrentGameTagLibrary();
 
@@ -68,13 +65,13 @@ public class VisionSystem {
         AprilTagLibrary library = libraryBuilder.build();
 
         // Lens calibration values from our 3DF Zephyr calibration (calibration.xml).
-        // Measured at 1280x720; scaled by SCALE for the resolution we actually run at.
-        // Only valid for a 16:9 resolution - a different shape (like 640x480) needs recalibrating.
+        // Calibrated at 640x480 MJPEG - the exact mode the camera runs in below. If you change the
+        // resolution or stream format, recalibrate (UtilityCameraFrameCapture must match too).
         aprilTag = new AprilTagProcessor.Builder()
                 .setTagLibrary(library)
                 .setLensIntrinsics(
-                        902.450747597 * SCALE, 902.450747597 * SCALE,
-                        633.887792793 * SCALE, 361.131399436 * SCALE)
+                        556.127568443, 556.127568443,
+                        323.935991972, 243.657891233)
                 .build();
 
         // TODO: make sure your robot configuration (Driver Station app -> Configure Robot) has
