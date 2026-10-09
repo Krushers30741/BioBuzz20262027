@@ -16,7 +16,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Sets up the webcam and the AprilTag detector, and gives the rest of the code a simple way to
@@ -59,21 +61,21 @@ public class VisionSystem {
         // Rename each tag to include its ID (e.g. "BLUE AUDIENCE 38") so the label drawn on the
         // camera stream shows exactly which tag it is. Same tags and sizes, just a clearer name.
         AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder();
-        boolean practiceTagInLibrary = false;
+        Set<Integer> haveIds = new HashSet<>();
         for (AprilTagMetadata tag : official.getAllTags()) {
             libraryBuilder.addTag(new AprilTagMetadata(
                     tag.id, tag.name + " " + tag.id, tag.tagsize, tag.distanceUnit));
-            if (tag.id == PRACTICE_TAG_ID) {
-                practiceTagInLibrary = true;
-            }
+            haveIds.add(tag.id);
         }
-        // Our practice tag is a 3.25 in. tag. If the official library doesn't include its ID,
-        // add it ourselves - without a size the detector can see the tag but can't measure it
-        // (metadata=NO, pose=NO). The check avoids the "tag already exists" error.
-        if (!practiceTagInLibrary) {
-            libraryBuilder.addTag(new AprilTagMetadata(
-                    PRACTICE_TAG_ID, "PRACTICE " + PRACTICE_TAG_ID,
-                    PRACTICE_TAG_SIZE_INCHES, DistanceUnit.INCH));
+        // The arena has 16 tags, IDs 30-45, all 3.25 in. If the official library is missing any
+        // of them, add them ourselves - a tag with no size info can be SEEN but not measured
+        // (metadata=NO, pose=NO). The haveIds check avoids "tag already exists".
+        for (int id = 30; id <= 45; id++) {
+            if (!haveIds.contains(id)) {
+                libraryBuilder.addTag(new AprilTagMetadata(
+                        id, (id <= 37 ? "RED " : "BLUE ") + id,
+                        PRACTICE_TAG_SIZE_INCHES, DistanceUnit.INCH));
+            }
         }
         AprilTagLibrary library = libraryBuilder.build();
 
