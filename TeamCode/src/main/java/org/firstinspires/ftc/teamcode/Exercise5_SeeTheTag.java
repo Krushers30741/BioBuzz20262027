@@ -55,6 +55,7 @@ public class Exercise5_SeeTheTag extends FTC30741Base {
             telemetry.addData("camera FPS", vision.getFps());
             telemetry.addData("tag IDs seen", vision.getSeenIds());
             telemetry.addData("looking for ID", VisionSystem.PRACTICE_TAG_ID);
+            telemetry.addData("IDs in library", vision.getLibraryIds());
             telemetry.update();
         }
         vision.close();

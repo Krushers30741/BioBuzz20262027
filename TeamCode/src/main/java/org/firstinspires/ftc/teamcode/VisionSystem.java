@@ -48,6 +48,7 @@ public class VisionSystem {
 
     private final AprilTagProcessor aprilTag;
     private final VisionPortal visionPortal;
+    private final String libraryIds;   // debug: every tag ID the detector has size info for
 
     public VisionSystem(HardwareMap hardwareMap) {
         // Start from the SDK's official library for this season's field tags.
@@ -58,11 +59,29 @@ public class VisionSystem {
         // Rename each tag to include its ID (e.g. "BLUE AUDIENCE 38") so the label drawn on the
         // camera stream shows exactly which tag it is. Same tags and sizes, just a clearer name.
         AprilTagLibrary.Builder libraryBuilder = new AprilTagLibrary.Builder();
+        boolean practiceTagInLibrary = false;
         for (AprilTagMetadata tag : official.getAllTags()) {
             libraryBuilder.addTag(new AprilTagMetadata(
                     tag.id, tag.name + " " + tag.id, tag.tagsize, tag.distanceUnit));
+            if (tag.id == PRACTICE_TAG_ID) {
+                practiceTagInLibrary = true;
+            }
+        }
+        // Our practice tag is a 3.25 in. tag. If the official library doesn't include its ID,
+        // add it ourselves - without a size the detector can see the tag but can't measure it
+        // (metadata=NO, pose=NO). The check avoids the "tag already exists" error.
+        if (!practiceTagInLibrary) {
+            libraryBuilder.addTag(new AprilTagMetadata(
+                    PRACTICE_TAG_ID, "PRACTICE " + PRACTICE_TAG_ID,
+                    PRACTICE_TAG_SIZE_INCHES, DistanceUnit.INCH));
         }
         AprilTagLibrary library = libraryBuilder.build();
+
+        StringBuilder ids = new StringBuilder();
+        for (AprilTagMetadata tag : library.getAllTags()) {
+            ids.append(tag.id).append(' ');
+        }
+        libraryIds = ids.toString().trim();
 
         // Lens calibration values from our 3DF Zephyr calibration (calibration.xml).
         // Calibrated at 640x480 MJPEG - the exact mode the camera runs in below. If you change the
@@ -124,6 +143,11 @@ public class VisionSystem {
             }
         }
         return null;
+    }
+
+    /** Debug: the tag IDs the library knows (only these get a name and a range/bearing). */
+    public String getLibraryIds() {
+        return libraryIds;
     }
 
     /** Camera status, e.g. STREAMING. Anything else (or an error) means the camera isn't delivering images. */
