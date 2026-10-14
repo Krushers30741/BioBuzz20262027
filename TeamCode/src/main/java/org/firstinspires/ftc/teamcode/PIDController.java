@@ -19,7 +19,7 @@ public class PIDController {
 
     private double kP, kI, kD;
 
-    // Stops the I part from growing without limit while the robot is stuck ("windup").
+    // Stops the part from growing without limit while the robot is stuck ("windup").
     private double integralLimit = 1.0;
 
     private double integral = 0;
@@ -60,22 +60,28 @@ public class PIDController {
         lastNanos = now;
 
         // TODO 1 (P): the proportional part is the error times kP.
-        double pTerm = 0;
+        double pTerm = kP* error;
 
         // TODO 2 (I): add error * dt to integral, then keep integral between
         //   -integralLimit and +integralLimit (Math.max / Math.min).
         //   Then the integral part is kI * integral.
-        double iTerm = 0;
+        integral += error * dt;
+        integral = Math.max(-integralLimit,Math.min(integralLimit, integral));
+        double iTerm = kI* integral;
+
 
         // TODO 3 (D): the derivative is how much the error changed, divided by dt:
         //   (error - lastError) / dt.  Only do this if dt > 0 (the first call has no dt).
         //   The derivative part is kD times that.
         double dTerm = 0;
+        if (!first && dt > 0) {
+            dTerm = kD * (error - lastError) / dt;
+        }
 
         lastError = error;
         first = false;
 
         // TODO 4: add the three parts together and return the result.
-        return 0;
+        return pTerm +iTerm + dTerm;
     }
 }
