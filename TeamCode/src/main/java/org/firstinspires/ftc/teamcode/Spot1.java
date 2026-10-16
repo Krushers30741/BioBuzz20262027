@@ -24,9 +24,10 @@ shooter.setForwardDirection();
 shooter.setPower(0.4);
 wait(6.0);
 shooter.setPower(0);
+intake.setPower(0.5);
 drive.driveTicks(2320,0,1,0);
 drive.driveTicks(4060,1,0,0);
-
+intake.setPower(0);
             telemetry.update();
         }
 
