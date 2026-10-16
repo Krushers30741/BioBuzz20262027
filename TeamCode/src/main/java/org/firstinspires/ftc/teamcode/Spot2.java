@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
+
 
 @Autonomous(name = "Spot1 - shoot all four Pollen", group = "Autos")
 public class Spot2 extends FTC30741Base {
@@ -19,8 +21,9 @@ public class Spot2 extends FTC30741Base {
         double giveUpTime = now() + 30.0;
 
         while (opModeIsActive() && now() < giveUpTime) {
+            driveForTime(0, 0, 1, 1);
 
-
+vision.findTag(38);
 
 
             telemetry.update();
