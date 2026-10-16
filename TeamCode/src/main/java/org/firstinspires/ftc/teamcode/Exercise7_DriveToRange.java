@@ -32,7 +32,7 @@ public class Exercise7_DriveToRange extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false);
+        initOpMode(true, false, false);
         initVision();
 
         telemetry.addLine("Exercise 7 ready - press START");

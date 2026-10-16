@@ -14,19 +14,25 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
 
     protected MecanumDrive drive;
     protected Intake intake;
+    protected Shooter shooter;
     protected VisionSystem vision;
 
     /**
      * @param useDrive  whether to build the drivetrain (see {@link MecanumDrive})
-     * @param useIntake whether to build the intake (see {@link Intake})
+     * @param useIntake whether to build the intake (see {@link Intake}
+     * @param useShooter whether to build the shooter (see {@link Shooter})
      */
-    public void initOpMode(boolean useDrive, boolean useIntake) {
+    public void initOpMode(boolean useDrive, boolean useIntake, boolean useShooter) {
         if (useDrive) {
             drive = new MecanumDrive(hardwareMap);
         }
 
         if (useIntake) {
             intake = new Intake(hardwareMap);
+        }
+
+        if (useShooter) {
+            shooter = new Shooter(hardwareMap);
         }
 
         telemetry.addLine("Robot Init Complete");
@@ -61,4 +67,11 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
     public double now() {
         return this.getRuntime();
     }
+
+    protected void wait(double seconds) {
+        double endTime = now() + seconds;
+        while (opModeIsActive() && now() < endTime) {
+        }
+    }
+
 }

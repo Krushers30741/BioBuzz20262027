@@ -10,7 +10,7 @@ public class Spot1 extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false);
+        initOpMode(true, false, true);
         initVision();
 
         telemetry.addLine("");
@@ -20,9 +20,12 @@ public class Spot1 extends FTC30741Base {
         double giveUpTime = now() + 30.0;
 
         while (opModeIsActive() && now() < giveUpTime) {
-
-
-
+shooter.setForwardDirection();
+shooter.setPower(0.4);
+wait(6.0);
+shooter.setPower(0);
+drive.driveTicks(2320,0,1,0);
+drive.driveTicks(4060,1,0,0);
 
             telemetry.update();
         }

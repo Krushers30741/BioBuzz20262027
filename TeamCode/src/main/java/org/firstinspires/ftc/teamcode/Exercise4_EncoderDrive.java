@@ -33,7 +33,7 @@ public class Exercise4_EncoderDrive extends FTC30741Base {
     private static final double TARGET_TICKS = 1000;
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false);
+        initOpMode(true, false, false);
         // COACH FIX: removed a leftover drive.getWheelPositions() call that was here -
         // it read the encoders and threw the result away without using it, so it didn't
         // actually do anything. The real reads happen below, where the result is used.

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -157,6 +159,13 @@ public class MecanumDrive {
             }
         }
         return minVoltage;
+    }
+    public void driveTicks(int ticks,int forward,int strafe,int turn){
+        while (getWheelPositions()[0]<ticks||getWheelPositions()[1]<ticks||getWheelPositions()[2]<ticks||getWheelPositions()[3]<ticks) {
+            driveRobotCentric(forward, strafe, turn);
+            telemetry.addData("front-left ticks", getWheelPositions()[0]);
+            telemetry.update();
+        }
     }
     }
 

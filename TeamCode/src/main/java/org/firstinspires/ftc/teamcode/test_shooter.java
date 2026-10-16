@@ -29,11 +29,11 @@ public class test_shooter  extends LinearOpMode {
         // Mirror telemetry to Panels, FTC Dashboard, and the Driver Station all at once.
 
 
-        DcMotorEx  LM = hardwareMap.get(DcMotorEx.class, "LM");
+        DcMotorEx  LM = hardwareMap.get(DcMotorEx.class, "leftShooterMotor");
 
-        DcMotorEx  RM = hardwareMap.get(DcMotorEx.class, "RM");
+        DcMotorEx  RM = hardwareMap.get(DcMotorEx.class, "rightShooterMotor");
 
-        DcMotorEx  CV = hardwareMap.get(DcMotorEx.class, "CV");
+        DcMotorEx  CV = hardwareMap.get(DcMotorEx.class, "conveyor");
 
         LM.setDirection(DcMotorSimple.Direction.FORWARD);
 

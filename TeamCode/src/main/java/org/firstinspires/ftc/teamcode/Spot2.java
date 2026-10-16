@@ -9,7 +9,7 @@ public class Spot2 extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false);
+        initOpMode(true, false,false);
         initVision();
 
         telemetry.addLine("");

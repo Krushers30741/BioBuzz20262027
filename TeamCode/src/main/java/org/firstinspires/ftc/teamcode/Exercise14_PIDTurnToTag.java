@@ -39,7 +39,7 @@ public class Exercise14_PIDTurnToTag extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false);
+        initOpMode(true, false, false);
         initVision();
 
         PIDController pid = new PIDController(kP, kI, kD);
