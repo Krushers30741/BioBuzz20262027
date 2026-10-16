@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Base class for all FTC30741 OpModes — BIOBUZZ (2026-2027) season.
  *
  * <p>Every OpMode fills out the same "form": which subsystems does it actually need?
- * {@link #initOpMode(boolean, boolean)} builds only the ones you ask for and wires them up —
+ *  builds only the ones you ask for and wires them up —
  * the real behavior for each subsystem lives in its own class ({@link MecanumDrive},
  * {@link Intake}), not here. Call this from your OpMode's runOpMode() before waitForStart().</p>
  */
@@ -16,13 +16,15 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
     protected Intake intake;
     protected Shooter shooter;
     protected VisionSystem vision;
+    protected Conveyor conveyor;
 
     /**
      * @param useDrive  whether to build the drivetrain (see {@link MecanumDrive})
      * @param useIntake whether to build the intake (see {@link Intake}
      * @param useShooter whether to build the shooter (see {@link Shooter})
+     * @param useShooter whether to build the shooter (see {@link Conveyor})
      */
-    public void initOpMode(boolean useDrive, boolean useIntake, boolean useShooter) {
+    public void initOpMode(boolean useDrive, boolean useIntake, boolean useShooter,boolean useConveyor) {
         if (useDrive) {
             drive = new MecanumDrive(hardwareMap);
         }
@@ -35,13 +37,17 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
             shooter = new Shooter(hardwareMap);
         }
 
+        if (useConveyor) {
+            conveyor = new Conveyor(hardwareMap);
+        }
+
         telemetry.addLine("Robot Init Complete");
         telemetry.update();
     }
 
     /**
      * Sets up the webcam and AprilTag detector (see {@link VisionSystem}). Call this once, in
-     * addition to {@link #initOpMode(boolean, boolean)}, in any OpMode that needs to see
+     * addition to , in any OpMode that needs to see
      * AprilTags. Kept separate from initOpMode so OpModes that don't use the camera don't pay
      * for starting it up.
      */
