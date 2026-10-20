@@ -160,12 +160,15 @@ public class MecanumDrive {
         }
         return minVoltage;
     }
-    public void driveTicks(int ticks,int forward,int strafe,int turn){
+    public void driveTicks(double ticks,int forward,int strafe,int turn){
         while (getWheelPositions()[0]<ticks||getWheelPositions()[1]<ticks||getWheelPositions()[2]<ticks||getWheelPositions()[3]<ticks) {
             driveRobotCentric(forward, strafe, turn);
             telemetry.addData("front-left ticks", getWheelPositions()[0]);
             telemetry.update();
         }
+    }
+    public double squares(double numOfSquares){
+       return 1160 * numOfSquares;
     }
     }
 
