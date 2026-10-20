@@ -24,7 +24,7 @@ public class Conveyor {
         conveyor.setPower(power);
     }
 
-    public void setDirection() {
+    public void setDirectionForward() {
         conveyor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 

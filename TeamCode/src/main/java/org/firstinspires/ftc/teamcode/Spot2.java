@@ -21,9 +21,23 @@ public class Spot2 extends FTC30741Base {
         double giveUpTime = now() + 30.0;
 
         while (opModeIsActive() && now() < giveUpTime) {
-            driveForTime(0, 0, 1, 1);
 
-vision.findTag(38);
+
+if(vision.findTag(38) == null && vision.findTag(39) == null && vision.findTag(40) == null && vision.findTag(41) == null) {
+    telemetry.addLine("Tag Not Found");}else{
+    shooter.setForwardDirection();
+    shooter.setFloat();
+    wait(1000);
+    shooter.setPower(.25)
+    conveyor.setDirectionForward();
+    conveyor.setPower(1);
+    wait(1000);
+    conveyor.setPower(0);
+    shooter.setPower(0);
+    driveForTime(1,0,0,.25);
+    driveForTime(0,1,0,2);
+    drive.driveRobotCentric(0,0,0);
+    }
 
 
             telemetry.update();
@@ -32,7 +46,7 @@ vision.findTag(38);
 
         drive.driveRobotCentric(0, 0, 0);
 
-        telemetry.addLine("Spot 1 complete!");
+        telemetry.addLine("Spot 2 complete!");
         telemetry.update();
 
         // Release the camera and its stream so the next OpMode can use them.
