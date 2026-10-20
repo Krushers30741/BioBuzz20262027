@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
@@ -10,7 +11,7 @@ public class Spot1 extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false, true,true);
+        initOpMode(true, false, true, true);
         initVision();
 
         telemetry.addLine("");
@@ -20,16 +21,16 @@ public class Spot1 extends FTC30741Base {
         double giveUpTime = now() + 30.0;
 
         while (opModeIsActive() && now() < giveUpTime) {
-shooter.setForwardDirection();
-shooter.setPower(0.4);
-conveyor.setPower(0.5);
-wait(6.0);
-conveyor.setPower(0);
-shooter.setPower(0);
-intake.setPower(0.5);
-drive.driveTicks(2320,0,1,0);
-drive.driveTicks(4060,1,0,0);
-intake.setPower(0);
+            shooter.setForwardDirection();
+            shooter.setVelocity(2000);
+            conveyor.setPower(0.5);
+            wait(6.0);
+            conveyor.setPower(0);
+            shooter.setPower(0);
+            intake.setPower(0.5);
+            drive.driveTicks(2320, 0, 1, 0);
+            drive.driveTicks(4060, 1, 0, 0);
+            intake.setPower(0);
             telemetry.update();
         }
 

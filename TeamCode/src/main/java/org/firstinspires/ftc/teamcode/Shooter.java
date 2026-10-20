@@ -22,9 +22,9 @@ public class Shooter {
 
         rightShooterMotor = hardwareMap.get(DcMotorEx.class, "rightShooterMotor");
 
-        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void setPower(double power) {
@@ -32,10 +32,29 @@ public class Shooter {
         rightShooterMotor.setPower(power);
     }
 
+    public double getLeftShooterMotorVelocity() {
+        return leftShooterMotor.getVelocity();
+    }
+
+    public double getRightShooterMotorVelocity() {
+        return rightShooterMotor.getVelocity();
+    }
+
+    public void setVelocity(double velocity) throws InterruptedException {
+        leftShooterMotor.setVelocity(velocity);
+        rightShooterMotor.setVelocity(velocity);
+        int counter=0;
+        while ((getLeftShooterMotorVelocity()<velocity && getRightShooterMotorVelocity()<velocity)||counter>4) {
+            wait(500);
+            counter++;
+        }
+    }
+
     public void setForwardDirection(){
         leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
+
     public void setReverseDirection(){
         leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rightShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
