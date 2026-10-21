@@ -17,7 +17,7 @@ public class Exercise1_DriveForward extends FTC30741Base {
     @Override
     public void runOpMode() throws InterruptedException {
         // This sets up the drivetrain (same as TeleopDrive does).
-         initOpMode(true, false,false,false);
+          initOpMode(true, false,false,false,false);
 
         telemetry.addLine("Exercise 1 ready - press START");
         telemetry.update();

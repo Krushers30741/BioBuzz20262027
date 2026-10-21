@@ -17,6 +17,7 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
     protected Shooter shooter;
     protected VisionSystem vision;
     protected Conveyor conveyor;
+    protected ColorSensor colorSensor;
 
     /**
      * @param useDrive  whether to build the drivetrain (see {@link MecanumDrive})
@@ -24,7 +25,7 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
      * @param useShooter whether to build the shooter (see {@link Shooter})
      * @param useShooter whether to build the shooter (see {@link Conveyor})
      */
-    public void initOpMode(boolean useDrive, boolean useIntake, boolean useShooter,boolean useConveyor) {
+    public void initOpMode(boolean useDrive, boolean useIntake, boolean useShooter,boolean useConveyor, boolean useColorSensor) {
         if (useDrive) {
             drive = new MecanumDrive(hardwareMap);
         }
@@ -41,6 +42,9 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
             conveyor = new Conveyor(hardwareMap);
         }
 
+        if (useColorSensor) {
+            colorSensor = new ColorSensor(hardwareMap);
+        }
         telemetry.addLine("Robot Init Complete");
         telemetry.update();
     }

@@ -14,15 +14,15 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
  * Right now it just hardware-maps a single motor and can spin it at a given power. Add real
  * behavior here (sensor checks, sequencing, etc.) once the mechanism design is settled.
  */
-public class colorSensor {
+public class ColorSensor {
 
     private final NormalizedColorSensor colorSensor;
     private NormalizedRGBA colors;
 
-    public colorSensor(HardwareMap hardwareMap) {
+    public ColorSensor(HardwareMap hardwareMap) {
         // TODO: make sure your hardware config has a motor with this name (or change it below)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSen0sor"); //Expansion Hub 0
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor"); //Expansion Hub 0
         colorSensor.setGain(2.0f);
         if (colorSensor instanceof SwitchableLight) {
             ((SwitchableLight) colorSensor).enableLight(true);

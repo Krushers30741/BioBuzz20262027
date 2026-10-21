@@ -28,7 +28,7 @@ public class Exercise3_SquarePath extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false,false,false);
+         initOpMode(true, false,false,false,false);
 
         telemetry.addLine("Exercise 3 ready - press START");
         telemetry.update();

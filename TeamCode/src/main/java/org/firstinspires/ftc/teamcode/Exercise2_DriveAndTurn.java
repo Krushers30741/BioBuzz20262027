@@ -23,7 +23,7 @@ public class Exercise2_DriveAndTurn extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-         initOpMode(true, false,false,false);
+          initOpMode(true, false,false,false,false);
 
         telemetry.addLine("Exercise 2 ready - press START");
         telemetry.update();

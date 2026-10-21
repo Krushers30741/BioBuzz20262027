@@ -32,7 +32,7 @@ public class Exercise6_TurnToFaceTag extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-         initOpMode(true, false,false,false);
+          initOpMode(true, false,false,false,false);
         initVision();
 
         telemetry.addLine("Exercise 6 ready - press START");
