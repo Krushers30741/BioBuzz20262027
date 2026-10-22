@@ -43,7 +43,7 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
         }
 
         if (useColorSensor) {
-            colorSensor = new ColorSensor(hardwareMap);
+            colorSensor = new ColorSensor(hardwareMap, telemetry);
         }
         telemetry.addLine("Robot Init Complete");
         telemetry.update();

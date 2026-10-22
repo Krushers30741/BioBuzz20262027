@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
 
-@Autonomous(name = "Spot1 - shoot all four Pollen", group = "Autos")
+@Autonomous(name = "Spot2 - shoot all four Pollen", group = "Autos")
 public class Spot2 extends FTC30741Base {
 
 

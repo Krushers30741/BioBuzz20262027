@@ -13,7 +13,7 @@ public class testColorSensor extends FTC30741Base {
         initOpMode(false, false, false, false, true);
 
 
-        telemetry.addLine("");
+        telemetry.addLine("5");
         telemetry.update();
         waitForStart();
 
@@ -26,7 +26,5 @@ public class testColorSensor extends FTC30741Base {
         telemetry.addLine("Spot 1 complete!");
         telemetry.update();
 
-        // Release the camera and its stream so the next OpMode can use them.
-        vision.close();
     }
 }
