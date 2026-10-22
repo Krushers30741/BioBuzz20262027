@@ -9,6 +9,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * BIOBUZZ TeleOp — field-centric mecanum drive.
@@ -22,14 +23,14 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  * the robot's WiFi. FTC Dashboard: {@code http://192.168.43.1:8080/dash}. The fields below are
  * marked {@code @Config} (FTC Dashboard) and {@code @Configurable} (Panels), so either
  * dashboard can tune them live while the robot runs, no redeploy needed.</p>
- *
+ * <p>
  * Controls (gamepad 1):
- *   left stick Y   - drive forward/back (field-relative — always "away from you")
- *   left stick X   - strafe left/right (field-relative)
- *   right stick X  - turn
- *   left bumper    - hold for slow/precision mode
- *   right bumper   - run intake (once enabled — see above)
- *   options        - reset "forward" to whichever way the robot is currently facing
+ * left stick Y   - drive forward/back (field-relative — always "away from you")
+ * left stick X   - strafe left/right (field-relative)
+ * right stick X  - turn
+ * left bumper    - hold for slow/precision mode
+ * right bumper   - run intake (once enabled — see above)
+ * options        - reset "forward" to whichever way the robot is currently facing
  */
 @Config
 @Configurable
@@ -47,9 +48,7 @@ public class TeleopDrive extends FTC30741Base {
     // warnings, instead of checking a driver's own watch/count. Live-tunable.
     public static double WARNING_SECONDS_LEFT = 20.0;
     public static double FINAL_WARNING_SECONDS_LEFT = 5.0;
-
     private static final double TELEOP_DURATION_SECONDS = 120.0;
-
     private boolean warningGiven = false;
     private boolean finalWarningGiven = false;
 
@@ -61,7 +60,7 @@ public class TeleopDrive extends FTC30741Base {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        initOpMode(true, true, false,false, false);
+        initOpMode(true, true, true, true, false);
 
         panelsTelemetry.debug("Ready - press START");
         panelsTelemetry.update(telemetry);
@@ -76,12 +75,24 @@ public class TeleopDrive extends FTC30741Base {
             double forward = -gamepad1.left_stick_y * slowModeScale;
             double strafe = gamepad1.left_stick_x * slowModeScale;
             double turn = gamepad1.right_stick_x * slowModeScale;
-           // drive.driveFieldCentric(forward, strafe, turn);
+            // drive.driveFieldCentric(forward, strafe, turn);
             drive.driveRobotCentric(forward, strafe, turn);
             if (intake != null) {
                 intake.setPower(gamepad1.right_bumper ? 0.75 : 0.0);
             }
-
+            if (shooter != null && gamepad1.leftBumperWasPressed()) {
+                shooter.setForwardDirection();
+                shooter.startVelocitySpinUp(1000.0);
+                conveyor.setPower(1.0);
+                this.wait(4.0);
+                shooter.setPower(0);
+                conveyor.setPower(0.0);
+            }
+            /** if (conveyor!= null) {
+             *  conveyor.setDirectionReverse();
+             * conveyor.setPower(gamepad1.a ? 1.0 : 0.0);
+             *}
+             */
             checkEndgameWarnings();
 
             panelsTelemetry.addData("heading (deg)", drive.getHeadingDegrees());

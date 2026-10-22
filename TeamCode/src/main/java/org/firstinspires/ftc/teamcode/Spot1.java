@@ -22,7 +22,7 @@ public class Spot1 extends FTC30741Base {
 
         while (opModeIsActive() && now() < giveUpTime) {
             shooter.setForwardDirection();
-            shooter.setVelocity(2000);
+            shooter.startVelocitySpinUp(2000);
             conveyor.setPower(0.5);
             wait(6.0);
             conveyor.setPower(0);

@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.exampleCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import org.firstinspires.ftc.teamcode.FTC30741Base;
 
 /**
  * EXERCISE 1: Drive Forward and Stop

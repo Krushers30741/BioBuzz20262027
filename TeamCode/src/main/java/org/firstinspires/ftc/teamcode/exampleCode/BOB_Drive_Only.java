@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.exampleCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name = "BOB Drive Only")
 public class BOB_Drive_Only extends LinearOpMode {

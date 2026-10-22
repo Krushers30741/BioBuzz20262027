@@ -28,7 +28,7 @@ public class Spot2 extends FTC30741Base {
             } else {
                 shooter.setForwardDirection();
                 shooter.setFloat();
-                shooter.setVelocity(2000);
+                shooter.startVelocitySpinUp(2000);
                 conveyor.setDirectionForward();
                 conveyor.setPower(1);
                 wait(10000);
