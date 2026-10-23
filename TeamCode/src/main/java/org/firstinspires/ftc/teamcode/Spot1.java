@@ -21,17 +21,19 @@ public class Spot1 extends FTC30741Base {
         double giveUpTime = now() + 30.0;
 
         while (opModeIsActive() && now() < giveUpTime) {
-            shooter.setForwardDirection();
-            shooter.startVelocitySpinUp(2000);
-            conveyor.setDirectionForward();
-            conveyor.setPower(0.5);
-            wait(6.0);
-            conveyor.setPower(0);
-            shooter.setPower(0);
-            intake.setPower(0.5);
-            drive.driveTicks(2320, 0, 1, 0);
-            drive.driveTicks(4060, 1, 0, 0);
-            intake.setPower(0);
+           // shooter.setForwardDirection();
+            //shooter.startVelocitySpinUp(2000);
+          //  conveyor.setDirectionForward();
+           // conveyor.setPower(0.5);
+            //wait(6.0);
+            //conveyor.setPower(0);
+           // shooter.setPower(0);
+          // intake.setPower(0.5);
+            drive.driveTicks(1, 0, 1, 0);
+            drive.driveTicks(1, 1, 0, 0);
+           // drive.driveTicks(2320, 0, 1, 0);
+          //  drive.driveTicks(4060, 1, 0, 0);
+           // intake.setPower(0);
             telemetry.update();
         }
 
