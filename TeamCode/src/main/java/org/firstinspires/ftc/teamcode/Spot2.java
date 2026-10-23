@@ -11,7 +11,7 @@ public class Spot2 extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false, false, false, false);
+        initOpMode(true, true, true, true, false);
         initVision();
 
         telemetry.addLine("");
@@ -28,7 +28,7 @@ public class Spot2 extends FTC30741Base {
             } else {
                 shooter.setForwardDirection();
                 shooter.setFloat();
-                shooter.startVelocitySpinUp(2000);
+                shooter.startVelocitySpinUp(1000);
                 conveyor.setDirectionForward();
                 conveyor.setPower(1);
                 wait(10000);

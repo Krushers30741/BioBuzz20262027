@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
@@ -21,11 +22,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class MecanumDrive {
 
     private final HardwareMap hardwareMap;
+    private Telemetry telemetry;
     private final DcMotorEx leftFront, leftBack, rightBack, rightFront;
     private final IMU imu;
 
-    public MecanumDrive(HardwareMap hw) {
+    public MecanumDrive(HardwareMap hw, Telemetry telemetry) {
         this.hardwareMap=hw;
+        this.telemetry = telemetry;
         // TODO: make sure your robot configuration (Driver Station app -> Configure Robot)
         //   has motors with these exact names, or change the names below to match.
         leftFront = hw.get(DcMotorEx.class, "leftFront"); //Expansion Hub 1
@@ -163,9 +166,10 @@ public class MecanumDrive {
     public void driveTicks(double ticks,int forward,int strafe,int turn){
         while (getWheelPositions()[0]<ticks||getWheelPositions()[1]<ticks||getWheelPositions()[2]<ticks||getWheelPositions()[3]<ticks) {
             driveRobotCentric(forward, strafe, turn);
-            telemetry.addData("front-left ticks", getWheelPositions()[0]);
-            telemetry.update();
+           telemetry.addData("front-left ticks", getWheelPositions()[0]);
+           telemetry.update();
         }
+        driveRobotCentric(0, 0, 0);
     }
     public double squares(double numOfSquares){
        return 1160 * numOfSquares;

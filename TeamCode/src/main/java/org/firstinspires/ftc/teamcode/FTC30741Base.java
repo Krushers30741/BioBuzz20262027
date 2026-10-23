@@ -27,7 +27,7 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
      */
     public void initOpMode(boolean useDrive, boolean useIntake, boolean useShooter,boolean useConveyor, boolean useColorSensor) {
         if (useDrive) {
-            drive = new MecanumDrive(hardwareMap);
+            drive = new MecanumDrive(hardwareMap, telemetry);
         }
 
         if (useIntake) {

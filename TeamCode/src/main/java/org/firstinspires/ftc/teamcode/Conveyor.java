@@ -25,11 +25,11 @@ public class Conveyor {
     }
 
     public void setDirectionForward() {
-        conveyor.setDirection(DcMotorSimple.Direction.FORWARD);
+        conveyor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void setDirectionReverse() {
-        conveyor.setDirection(DcMotorSimple.Direction.REVERSE);
+        conveyor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void brake() {
