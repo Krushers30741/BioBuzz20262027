@@ -67,7 +67,6 @@ public class MecanumDrive {
      */
     public void driveFieldCentric(double forward, double strafe, double turn) {
         double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        forward =-forward;
         // Rotate the stick vector by -heading so "forward" means "away from the driver"
         // instead of "whichever way the robot's front currently points."
         double rotatedForward = forward * Math.cos(-heading) - strafe * Math.sin(-heading);
@@ -100,7 +99,6 @@ public class MecanumDrive {
      */
     public void driveRobotCentric(double forward, double strafe, double turn) {
 
-        forward =-forward;
         double frontLeftPower = forward + strafe + turn;
         double frontRightPower = forward + strafe - turn;
         double backLeftPower = forward - strafe + turn;
