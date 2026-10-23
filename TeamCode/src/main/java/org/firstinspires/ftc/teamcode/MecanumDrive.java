@@ -29,6 +29,10 @@ public class MecanumDrive {
     // Tune live in FTC Dashboard (Configuration -> MecanumDrive), no redeploy needed.
     public static double RIGHT_BACK_STRAFE_TRIM = 1.0;
 
+    // Front-left wheel is the weak one when strafing LEFT only. Boosts it in proportion to the
+    // stick. 1.0 = no change. Try 1.05, 1.1, ... (below 1.0 if it gets worse). Live in Dashboard.
+    public static double LEFT_FRONT_STRAFE_LEFT_TRIM = 1.0;
+
     private final HardwareMap hardwareMap;
     private Telemetry telemetry;
     private final DcMotorEx leftFront, leftBack, rightBack, rightFront;
@@ -59,8 +63,8 @@ public class MecanumDrive {
         //   mounted on the robot: https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html
         imu = hw.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP)));
     }
 
     /**
@@ -118,7 +122,10 @@ public class MecanumDrive {
                 Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower)),
                 Math.max(Math.abs(backLeftPower), Math.abs(backRightPower))));
 
-        leftFront.setPower(frontLeftPower / max);
+        double lfTrim = strafe < 0
+                ? 1.0 + (LEFT_FRONT_STRAFE_LEFT_TRIM - 1.0) * Math.min(1.0, Math.abs(strafe))
+                : 1.0;
+        leftFront.setPower(Math.max(-1.0, Math.min(1.0, frontLeftPower / max * lfTrim)));
         rightFront.setPower(frontRightPower / max);
         leftBack.setPower(backLeftPower / max);
         double trim = 1.0 + (RIGHT_BACK_STRAFE_TRIM - 1.0) * Math.min(1.0, Math.abs(strafe));
