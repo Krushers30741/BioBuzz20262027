@@ -77,19 +77,22 @@ public class TeleopDrive extends FTC30741Base {
             double turn = gamepad1.right_stick_x * slowModeScale;
             // drive.driveFieldCentric(forward, strafe, turn);
             drive.driveRobotCentric(forward, strafe, turn);
-            if (intake != null && gamepad1.right_bumper)  {
-                intake.setPower( 0.75);
+            if (intake != null)  {
+                intake.setPower(gamepad1.right_bumper ? 0.75:0.0);
                 conveyor.setDirectionForward();
-                conveyor.setPower(1);
+                conveyor.setPower(gamepad1.right_bumper ?1:0.0);
             }
             if (shooter != null && gamepad1.leftBumperWasPressed()) {
                 shooter.setForwardDirection();
-                shooter.startVelocitySpinUp(2000.0);
+                shooter.startVelocitySpinUp(1500.00);
                 conveyor.setDirectionForward();
-                conveyor.setPower(1.0);
-                this.wait(20.0);
+                if(shooter.isReady()){
+                    conveyor.setPower(1.0);
+                }
+            }
+            if (shooter != null && gamepad1.left_trigger_pressed){
                 shooter.setPower(0);
-                conveyor.setPower(0.0);
+                conveyor.setPower(0);
             }
             /** if (conveyor!= null) {
              *  conveyor.setDirectionReverse();
