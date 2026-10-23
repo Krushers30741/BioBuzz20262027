@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-
+@Config
 @Autonomous(name = "Spot1 - shoot all four Pollen", group = "Autos")
 public class Spot1 extends FTC30741Base {
 
+public static double tick1 =100;
+    public static double tick2 =100;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -20,7 +23,7 @@ public class Spot1 extends FTC30741Base {
 
         double giveUpTime = now() + 30.0;
 
-        while (opModeIsActive() && now() < giveUpTime) {
+        if (opModeIsActive()) {
            // shooter.setForwardDirection();
             //shooter.startVelocitySpinUp(2000);
           //  conveyor.setDirectionForward();
@@ -29,8 +32,8 @@ public class Spot1 extends FTC30741Base {
             //conveyor.setPower(0);
            // shooter.setPower(0);
           // intake.setPower(0.5);
-            drive.driveTicks(1, 0, 1, 0);
-            drive.driveTicks(1, 1, 0, 0);
+            drive.driveTicks(tick1, 0, 1, 0);
+            drive.driveTicks(tick2, 1, 0, 0);
            // drive.driveTicks(2320, 0, 1, 0);
           //  drive.driveTicks(4060, 1, 0, 0);
            // intake.setPower(0);
@@ -43,7 +46,6 @@ public class Spot1 extends FTC30741Base {
         telemetry.addLine("Spot 1 complete!");
         telemetry.update();
 
-        // Release the camera and its stream so the next OpMode can use them.
-        vision.close();
+
     }
 }

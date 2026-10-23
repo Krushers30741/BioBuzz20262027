@@ -200,7 +200,7 @@ public class MecanumDrive {
         return true;
     }
     public double squares(double numOfSquares){
-       return 1160 * numOfSquares;
+       return 1100 * numOfSquares;
     }
     }
 
