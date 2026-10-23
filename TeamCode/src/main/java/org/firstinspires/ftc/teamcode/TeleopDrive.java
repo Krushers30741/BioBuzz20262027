@@ -76,7 +76,7 @@ public class TeleopDrive extends FTC30741Base {
             double strafe = gamepad1.left_stick_x * slowModeScale;
             double turn = gamepad1.right_stick_x * slowModeScale;
             // drive.driveFieldCentric(forward, strafe, turn);
-            drive.driveRobotCentric(forward, strafe, turn);
+            drive.driveRobotCentricHeadingHold(forward, strafe, turn);
             if (intake != null)  {
                 intake.setPower(gamepad1.right_bumper ? 0.75:0.0);
                 conveyor.setDirectionForward();

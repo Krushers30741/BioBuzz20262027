@@ -29,6 +29,21 @@ public class MecanumDrive {
     // Tune live in FTC Dashboard (Configuration -> MecanumDrive), no redeploy needed.
     public static double RIGHT_BACK_STRAFE_TRIM = 1.0;
 
+    // ---- Heading hold (keeps the robot pointed the same way while driving straight/strafing) ----
+    // Turn it on/off live in FTC Dashboard (Configuration -> MecanumDrive).
+    public static boolean HEADING_HOLD_ENABLED = false;
+    // Turn power added per degree of heading error. 5 degrees off * 0.02 = 0.1 turn power.
+    // Too small = still drifts. Too big = the robot wobbles side to side.
+    public static double HEADING_KP = 0.02;
+    // Damping: raise slightly (e.g. 0.001) only if it wobbles. Leave 0 to start.
+    public static double HEADING_KD = 0.0;
+    public static double HEADING_MAX_CORRECTION = 0.3;
+
+    private boolean holdingHeading = false;
+    private double targetHeadingDeg = 0.0;
+    private double lastHeadingErrorDeg = 0.0;
+    private long lastHoldNanos = 0;
+
     // Front-left wheel is the weak one when strafing LEFT only. Boosts it in proportion to the
     // stick. 1.0 = no change. Try 1.05, 1.1, ... (below 1.0 if it gets worse). Live in Dashboard.
     public static double LEFT_FRONT_STRAFE_LEFT_TRIM = 1.0;
@@ -109,6 +124,47 @@ public class MecanumDrive {
      * @param strafe  how much to strafe left/right (-1 to 1; pass gamepad.left_stick_x)
      * @param turn    how much to rotate (-1 to 1; pass gamepad.right_stick_x)
      */
+    /**
+     * Like driveRobotCentric, but when you are driving without turning, it uses the IMU to keep
+     * the robot pointed the same way (a PD controller on heading error). If you ask for a turn,
+     * or the robot is not translating, the hold lets go and re-locks on the new heading later.
+     * Does nothing extra unless HEADING_HOLD_ENABLED is true.
+     */
+    public void driveRobotCentricHeadingHold(double forward, double strafe, double turn) {
+        boolean translating = Math.abs(forward) > 0.05 || Math.abs(strafe) > 0.05;
+        if (!HEADING_HOLD_ENABLED || Math.abs(turn) > 0.05 || !translating) {
+            holdingHeading = false;
+            driveRobotCentric(forward, strafe, turn);
+            return;
+        }
+
+        double heading = getHeadingDegrees();
+        long now = System.nanoTime();
+        if (!holdingHeading) {
+            holdingHeading = true;
+            targetHeadingDeg = heading;
+            lastHeadingErrorDeg = 0;
+            lastHoldNanos = now;
+        }
+
+        // Error in degrees, wrapped to -180..180 so it never takes the long way around.
+        double error = targetHeadingDeg - heading;
+        while (error > 180) error -= 360;
+        while (error < -180) error += 360;
+
+        double dt = (now - lastHoldNanos) / 1e9;
+        double derivative = dt > 0 ? (error - lastHeadingErrorDeg) / dt : 0;
+        lastHeadingErrorDeg = error;
+        lastHoldNanos = now;
+
+        // IMU yaw is positive when the robot turns LEFT, but a positive turn power spins it
+        // RIGHT, so the correction is the opposite sign of the error.
+        double correction = -(HEADING_KP * error + HEADING_KD * derivative);
+        correction = Math.max(-HEADING_MAX_CORRECTION, Math.min(HEADING_MAX_CORRECTION, correction));
+
+        driveRobotCentric(forward, strafe, correction);
+    }
+
     public void driveRobotCentric(double forward, double strafe, double turn) {
 
         double frontLeftPower = forward + strafe + turn;
@@ -202,13 +258,14 @@ public class MecanumDrive {
         // Wheel positions do not start at zero, so remember where each wheel began.
         double[] start = getWheelPositions();
         while (isActive.getAsBoolean() && !wheelsTravelled(start, ticks)) {
-            driveRobotCentric(-forward, strafe, turn);
+            driveRobotCentricHeadingHold(-forward, strafe, turn);
             // telemetry can be null if whoever built this MecanumDrive didn't pass one in.
             if (telemetry != null) {
                 telemetry.addData("front-left ticks", getWheelPositions()[0] - start[0]);
                 telemetry.update();
             }
         }
+        holdingHeading = false;   // next move locks onto its own starting heading
         driveRobotCentric(0, 0, 0);
     }
 
