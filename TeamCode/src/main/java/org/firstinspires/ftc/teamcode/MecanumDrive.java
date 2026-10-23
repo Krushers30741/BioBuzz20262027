@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 
-
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -29,7 +28,7 @@ public class MecanumDrive {
     private final IMU imu;
 
     public MecanumDrive(HardwareMap hw, Telemetry telemetry) {
-        this.hardwareMap=hw;
+        this.hardwareMap = hw;
         this.telemetry = telemetry;
         // TODO: make sure your robot configuration (Driver Station app -> Configure Robot)
         //   has motors with these exact names, or change the names below to match.
@@ -56,6 +55,7 @@ public class MecanumDrive {
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
     }
+
     /**
      * Drives the robot relative to the FIELD instead of relative to the robot's current
      * heading. Reads the IMU heading and rotates the stick input by it before mixing into
@@ -88,6 +88,7 @@ public class MecanumDrive {
         leftBack.setPower(backLeftPower / max);
         rightBack.setPower(backRightPower / max);
     }
+
     /**
      * Drives the robot relative to the FIELD instead of relative to the robot's current
      * heading. Reads the IMU heading and rotates the stick input by it before mixing into
@@ -115,6 +116,7 @@ public class MecanumDrive {
         leftBack.setPower(backLeftPower / max);
         rightBack.setPower(backRightPower / max);
     }
+
     /**
      * Tells the IMU "whatever direction the robot is facing right now counts as forward."
      * Bind this to a button so a driver can re-zero the heading if the robot got bumped or
@@ -124,18 +126,21 @@ public class MecanumDrive {
         imu.resetYaw();
     }
 
-    /** Current heading in degrees — mainly for telemetry/debugging. */
+    /**
+     * Current heading in degrees — mainly for telemetry/debugging.
+     */
     public double getHeadingDegrees() {
         return Math.toDegrees(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
     }
-    public double[] getWheelVelocities(){
-       return new double[]{
+
+    public double[] getWheelVelocities() {
+        return new double[]{
                 leftFront.getVelocity(),
                 rightFront.getVelocity(),
                 leftBack.getVelocity(),
                 rightBack.getVelocity()
         };
-        }
+    }
 
     public double[] getWheelPositions() {
         return new double[]{
@@ -145,27 +150,32 @@ public class MecanumDrive {
                 rightBack.getCurrentPosition()
         };
     }
-        public double[] getWheelCurrents(){
+
+    public double[] getWheelCurrents() {
         return new double[]{
                 leftFront.getCurrent(CurrentUnit.AMPS),
                 rightFront.getCurrent(CurrentUnit.AMPS),
                 leftBack.getCurrent(CurrentUnit.AMPS),
                 rightBack.getCurrent(CurrentUnit.AMPS)
         };
-        }
-    public double getBatteryVoltage(){
+    }
+
+    public double getBatteryVoltage() {
         double minVoltage = Double.POSITIVE_INFINITY;
-        for (VoltageSensor sensor :hardwareMap.voltageSensor){
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
             double v = sensor.getVoltage();
-            if (v>0&&v<minVoltage){
+            if (v > 0 && v < minVoltage) {
                 minVoltage = v;
             }
         }
         return minVoltage;
     }
-    /** Old signature: kept so existing code compiles. It cannot see the Stop button, so prefer
-     *  the version below that takes isActive. */
-    public void driveTicks(double ticks,int forward,int strafe,int turn){
+
+    /**
+     * Old signature: kept so existing code compiles. It cannot see the Stop button, so prefer
+     * the version below that takes isActive.
+     */
+    public void driveTicks(double ticks, int forward, int strafe, int turn) {
         driveTicks(ticks, forward, strafe, turn, () -> true);
     }
 
@@ -173,7 +183,7 @@ public class MecanumDrive {
      * Drives until every wheel has travelled at least {@code ticks} (in either direction), or
      * until isActive turns false (pass {@code this::opModeIsActive} from your OpMode).
      */
-    public void driveTicks(double ticks,int forward,int strafe,int turn, BooleanSupplier isActive){
+    public void driveTicks(double ticks, int forward, int strafe, int turn, BooleanSupplier isActive) {
         // Wheel positions do not start at zero, so remember where each wheel began.
         double[] start = getWheelPositions();
         while (isActive.getAsBoolean() && !wheelsTravelled(start, ticks)) {
@@ -197,8 +207,9 @@ public class MecanumDrive {
         }
         return true;
     }
-    public double squares(double numOfSquares){
-       return 1100 * numOfSquares;
+
+    public double squares(double numOfSquares) {
+        return 1100 * numOfSquares;
     }
-    }
+}
 
