@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import java.util.function.BooleanSupplier;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -163,13 +165,39 @@ public class MecanumDrive {
         }
         return minVoltage;
     }
+    /** Old signature: kept so existing code compiles. It cannot see the Stop button, so prefer
+     *  the version below that takes isActive. */
     public void driveTicks(double ticks,int forward,int strafe,int turn){
-        while (getWheelPositions()[0]<ticks||getWheelPositions()[1]<ticks||getWheelPositions()[2]<ticks||getWheelPositions()[3]<ticks) {
+        driveTicks(ticks, forward, strafe, turn, () -> true);
+    }
+
+    /**
+     * Drives until every wheel has travelled at least {@code ticks} (in either direction), or
+     * until isActive turns false (pass {@code this::opModeIsActive} from your OpMode).
+     */
+    public void driveTicks(double ticks,int forward,int strafe,int turn, BooleanSupplier isActive){
+        // Wheel positions do not start at zero, so remember where each wheel began.
+        double[] start = getWheelPositions();
+        while (isActive.getAsBoolean() && !wheelsTravelled(start, ticks)) {
             driveRobotCentric(forward, strafe, turn);
-           telemetry.addData("front-left ticks", getWheelPositions()[0]);
-           telemetry.update();
+            // telemetry can be null if whoever built this MecanumDrive didn't pass one in.
+            if (telemetry != null) {
+                telemetry.addData("front-left ticks", getWheelPositions()[0] - start[0]);
+                telemetry.update();
+            }
         }
         driveRobotCentric(0, 0, 0);
+    }
+
+    // True once EVERY wheel has moved at least ticks from its start, forward or backward.
+    private boolean wheelsTravelled(double[] start, double ticks) {
+        double[] now = getWheelPositions();
+        for (int i = 0; i < 4; i++) {
+            if (Math.abs(now[i] - start[i]) < ticks) {
+                return false;
+            }
+        }
+        return true;
     }
     public double squares(double numOfSquares){
        return 1160 * numOfSquares;
