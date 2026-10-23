@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,7 +21,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
  * and does field-centric mecanum driving — pushing the stick "forward" always drives away
  * from the driver, even if the robot has spun around mid-match.
  */
+@Config
 public class MecanumDrive {
+
+    // Back-right wheel runs slow while strafing, which turns the robot a bit. This boosts that
+    // wheel's power in proportion to how hard you strafe. 1.0 = no change. Try 1.05, 1.1, ...
+    // Tune live in FTC Dashboard (Configuration -> MecanumDrive), no redeploy needed.
+    public static double RIGHT_BACK_STRAFE_TRIM = 1.0;
 
     private final HardwareMap hardwareMap;
     private Telemetry telemetry;
@@ -44,7 +51,7 @@ public class MecanumDrive {
 
         for (DcMotorEx motor : new DcMotorEx[]{leftFront, leftBack, rightBack, rightFront}) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         // Built-in Control Hub IMU — used for field-centric drive below.
@@ -114,7 +121,8 @@ public class MecanumDrive {
         leftFront.setPower(frontLeftPower / max);
         rightFront.setPower(frontRightPower / max);
         leftBack.setPower(backLeftPower / max);
-        rightBack.setPower(backRightPower / max);
+        double trim = 1.0 + (RIGHT_BACK_STRAFE_TRIM - 1.0) * Math.min(1.0, Math.abs(strafe));
+        rightBack.setPower(Math.max(-1.0, Math.min(1.0, backRightPower / max * trim)));
     }
 
     /**
