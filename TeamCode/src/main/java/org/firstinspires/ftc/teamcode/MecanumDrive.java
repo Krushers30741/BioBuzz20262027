@@ -187,7 +187,7 @@ public class MecanumDrive {
         // Wheel positions do not start at zero, so remember where each wheel began.
         double[] start = getWheelPositions();
         while (isActive.getAsBoolean() && !wheelsTravelled(start, ticks)) {
-            driveRobotCentric(forward, strafe, turn);
+            driveRobotCentric(-forward, strafe, turn);
             // telemetry can be null if whoever built this MecanumDrive didn't pass one in.
             if (telemetry != null) {
                 telemetry.addData("front-left ticks", getWheelPositions()[0] - start[0]);
