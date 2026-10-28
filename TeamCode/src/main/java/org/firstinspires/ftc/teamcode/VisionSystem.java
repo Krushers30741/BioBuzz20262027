@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Sets up the webcam and the AprilTag detector, and gives the rest of the code a simple way to
@@ -51,6 +53,8 @@ public class VisionSystem {
     private final AprilTagProcessor aprilTag;
     private final VisionPortal visionPortal;
     private final String libraryIds;   // debug: every tag ID the detector has size info for
+    // 1. Declare the control object
+    private final ExposureControl myExposureControl;
 
     public VisionSystem(HardwareMap hardwareMap) {
         // Start from the SDK's official library for this season's field tags.
@@ -118,6 +122,18 @@ public class VisionSystem {
         // doesn't appear for OpModes that use VisionSystem.
         CameraStreamServer.getInstance().setSource(visionPortal);
         FtcDashboard.getInstance().startCameraStream(visionPortal, 30);
+
+
+
+
+// 2. Inside runOpMode(), wait until VisionPortal is STREAMING
+        myExposureControl = visionPortal.getCameraControl(ExposureControl.class);
+
+// 3. Switch exposure mode to Manual
+        myExposureControl.setMode(ExposureControl.Mode.Manual);
+
+// 4. Set the exposure duration (e.g., to 30 milliseconds)
+        myExposureControl.setExposure(30, TimeUnit.MILLISECONDS);
     }
 
     /** Every AprilTag the camera can currently see that it also recognizes (has size info for). */

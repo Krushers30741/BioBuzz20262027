@@ -34,7 +34,7 @@ public class Spot1 extends FTC30741Base {
            shooter.setPower(0);
            intake.setPower(0.5);
            drive.driveTicks(drive.squares(2), 0, 1, 0);
-           drive.driveTicks(drive.squares(3.5), 1, 0, 0);
+           drive.driveTicks(drive.squares(4), 1, 0, 0);
            intake.setPower(0);
             telemetry.update();
         }

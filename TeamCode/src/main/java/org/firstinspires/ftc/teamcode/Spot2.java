@@ -22,10 +22,10 @@ public class Spot2 extends FTC30741Base {
 
         if (opModeIsActive() && now() < giveUpTime) {
 
-            while (vision.getDetections() == null || now() < giveUpTime - 15) {
+            while (vision.getDetections().isEmpty() && now() < giveUpTime - 15) {
                 telemetry.addLine("Tag Not Found");
             }
-            if (vision.getDetections() != null) {
+            if (!vision.getDetections().isEmpty()) {
                 shooter.setForwardDirection();
                 shooter.setFloat();
                 shooter.startVelocitySpinUp(1000);
@@ -38,8 +38,8 @@ public class Spot2 extends FTC30741Base {
                 shooter.setPower(0);
             }
 
-            drive.driveTicks(drive.squares(1.5), 1, 0, 0);
-            drive.driveTicks(drive.squares(2.5), 0, 1, 0);
+            drive.driveTicks(drive.squares(0.5), 1, 0, 0);
+            drive.driveTicks(drive.squares(3), 0, -1, 0);
             drive.driveRobotCentric(0, 0, 0);
 
             telemetry.update();
