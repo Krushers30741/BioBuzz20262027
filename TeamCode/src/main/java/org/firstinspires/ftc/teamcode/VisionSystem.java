@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamServer;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -53,8 +54,6 @@ public class VisionSystem {
     private final AprilTagProcessor aprilTag;
     private final VisionPortal visionPortal;
     private final String libraryIds;   // debug: every tag ID the detector has size info for
-    // 1. Declare the control object
-    private final ExposureControl myExposureControl;
 
     public VisionSystem(HardwareMap hardwareMap) {
         // Start from the SDK's official library for this season's field tags.
@@ -123,17 +122,38 @@ public class VisionSystem {
         CameraStreamServer.getInstance().setSource(visionPortal);
         FtcDashboard.getInstance().startCameraStream(visionPortal, 30);
 
+    }
 
-
-
-// 2. Inside runOpMode(), wait until VisionPortal is STREAMING
-        myExposureControl = visionPortal.getCameraControl(ExposureControl.class);
-
-// 3. Switch exposure mode to Manual
-        myExposureControl.setMode(ExposureControl.Mode.Manual);
-
-// 4. Set the exposure duration (e.g., to 30 milliseconds)
-        myExposureControl.setExposure(30, TimeUnit.MILLISECONDS);
+    /**
+     * Sets the camera to manual exposure and gain. Call it right after initVision(), before
+     * waitForStart(). Short exposure = sharper tags while moving but a darker picture (raise gain
+     * to compensate); long exposure = brighter but blurs when the robot moves. Waits up to 3
+     * seconds for the camera to start streaming first, because the SDK only allows this then.
+     *
+     * @param exposureMs exposure time in milliseconds (e.g. 6 while moving, 15 when still)
+     * @param gain       camera gain (e.g. 250 with a short exposure, 100 with a longer one)
+     * @return true if the settings were applied
+     */
+    public boolean setManualExposure(int exposureMs, int gain) {
+        long end = System.currentTimeMillis() + 3000;
+        while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING
+                && System.currentTimeMillis() < end) {
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            return false;
+        }
+        ExposureControl exposure = visionPortal.getCameraControl(ExposureControl.class);
+        exposure.setMode(ExposureControl.Mode.Manual);
+        exposure.setExposure(exposureMs, TimeUnit.MILLISECONDS);
+        GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+        gainControl.setGain(gain);
+        return true;
     }
 
     /** Every AprilTag the camera can currently see that it also recognizes (has size info for). */

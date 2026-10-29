@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime; // Added for non-blocking timing
 
+import java.util.function.BooleanSupplier;
+
 public class Shooter {
 
     private final DcMotorEx rightShooterMotor;
@@ -59,6 +61,22 @@ public class Shooter {
             }
         }
 
+        return false;
+    }
+
+    /**
+     * Blocks until the shooter is at speed, but never forever: gives up after timeoutSeconds, or
+     * as soon as isActive turns false (pass {@code this::opModeIsActive} from your OpMode).
+     * Call startVelocitySpinUp(...) first. Returns true if the shooter became ready.
+     */
+    public boolean waitUntilReady(double timeoutSeconds, BooleanSupplier isActive) {
+        long end = System.nanoTime() + (long) (timeoutSeconds * 1e9);
+        while (isActive.getAsBoolean() && System.nanoTime() < end) {
+            // isReady() reports true only once per spin-up, so use its answer right away.
+            if (isReady()) {
+                return true;
+            }
+        }
         return false;
     }
 
