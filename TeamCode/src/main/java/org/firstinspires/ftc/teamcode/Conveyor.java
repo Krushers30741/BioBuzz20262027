@@ -17,7 +17,7 @@ public class Conveyor {
     public Conveyor(HardwareMap hardwareMap) {
         // TODO: make sure your hardware config has a motor with this name (or change it below)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        conveyor = hardwareMap.get(DcMotorEx.class, "conveyor");
+        conveyor = hardwareMap.get(DcMotorEx.class, "conveyor");//Control Hub 3
     }
 
     public void setPower(double power) {

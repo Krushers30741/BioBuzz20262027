@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode;
-
+//hey, its me, its jsfdnmssfs;andios3hjnr45mnmfdm67ejek
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -33,8 +33,8 @@ public class Spot1 extends FTC30741Base {
            conveyor.setPower(0);
            shooter.setPower(0);
            intake.setPower(0.5);
-           drive.driveTicks(drive.squares(2), 0, 1, 0);
-           drive.driveTicks(drive.squares(4), 1, 0, 0);
+           drive.driveTicks(drive.squares(2), 0, 0.75, 0);
+           drive.driveTicks(drive.squares(4), -0.75, 0, 0);
            intake.setPower(0);
             telemetry.update();
         }

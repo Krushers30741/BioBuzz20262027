@@ -60,8 +60,8 @@ public class MecanumDrive {
         //   has motors with these exact names, or change the names below to match.
         leftFront = hw.get(DcMotorEx.class, "leftFront"); //Expansion Hub 1
         leftBack = hw.get(DcMotorEx.class, "leftBack"); //Expansion Hub 3
-        rightBack = hw.get(DcMotorEx.class, "rightBack");//Control Hub 1
-        rightFront = hw.get(DcMotorEx.class, "rightFront");//Control Hub 0
+        rightBack = hw.get(DcMotorEx.class, "rightBack");//Control Hub 0
+        rightFront = hw.get(DcMotorEx.class, "rightFront");//Control Hub 1
 
         leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -166,11 +166,12 @@ public class MecanumDrive {
     }
 
     public void driveRobotCentric(double forward, double strafe, double turn) {
-
+        forward = -forward;
+        //strafe = -strafe;
         double frontLeftPower = forward + strafe + turn;
-        double frontRightPower = forward + strafe - turn;
+        double frontRightPower = forward - strafe - turn;
         double backLeftPower = forward - strafe + turn;
-        double backRightPower = forward - strafe - turn;
+        double backRightPower = forward + strafe - turn;
 
         // Scale all four down together (never up) so pushing two sticks at once can't push
         // any wheel's requested power over 1.0 and distort the direction the robot travels.
@@ -246,7 +247,7 @@ public class MecanumDrive {
      * Old signature: kept so existing code compiles. It cannot see the Stop button, so prefer
      * the version below that takes isActive.
      */
-    public void driveTicks(double ticks, int forward, int strafe, int turn) {
+    public void driveTicks(double ticks, double forward, double strafe, double turn) {
         driveTicks(ticks, forward, strafe, turn, () -> true);
     }
 
@@ -254,7 +255,7 @@ public class MecanumDrive {
      * Drives until every wheel has travelled at least {@code ticks} (in either direction), or
      * until isActive turns false (pass {@code this::opModeIsActive} from your OpMode).
      */
-    public void driveTicks(double ticks, int forward, int strafe, int turn, BooleanSupplier isActive) {
+    public void driveTicks(double ticks, double forward, double strafe, double turn, BooleanSupplier isActive) {
         // Wheel positions do not start at zero, so remember where each wheel began.
         double[] start = getWheelPositions();
         while (isActive.getAsBoolean() && !wheelsTravelled(start, ticks)) {

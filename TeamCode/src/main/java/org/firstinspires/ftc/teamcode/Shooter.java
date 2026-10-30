@@ -20,8 +20,8 @@ public class Shooter {
     private boolean isSpinningUp = false;
 
     public Shooter(HardwareMap hardwareMap) {
-        leftShooterMotor = hardwareMap.get(DcMotorEx.class, "leftShooterMotor");
-        rightShooterMotor = hardwareMap.get(DcMotorEx.class, "rightShooterMotor");
+        leftShooterMotor = hardwareMap.get(DcMotorEx.class, "leftShooterMotor");//Expansion Hub 2
+        rightShooterMotor = hardwareMap.get(DcMotorEx.class, "rightShooterMotor");//Control Hub 2
 
         leftShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

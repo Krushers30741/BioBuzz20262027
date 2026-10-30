@@ -54,6 +54,28 @@ public class VisionSystem {
     private final AprilTagProcessor aprilTag;
     private final VisionPortal visionPortal;
     private final String libraryIds;   // debug: every tag ID the detector has size info for
+    public boolean hasSpot2(){
+      if(findTag(38)!=null){
+          return true;
+      } else if(findTag(39)!=null){
+          return true;
+      } else if(findTag(40)!=null){
+          return true;
+      } else if(findTag(41)!=null){
+          return true;
+      } else if(findTag(30)!=null){
+          return true;
+      } else if(findTag(31)!=null){
+          return true;
+      } else if(findTag(32)!=null){
+          return true;
+      } else if(findTag(33)!=null) {
+          return true;
+      } else{
+          return false;
+      }
+    }
+
 
     public VisionSystem(HardwareMap hardwareMap) {
         // Start from the SDK's official library for this season's field tags.
@@ -84,7 +106,7 @@ public class VisionSystem {
 
         StringBuilder ids = new StringBuilder();
         for (AprilTagMetadata tag : library.getAllTags()) {
-            ids.append(tag.id).append(' ');
+          ids.append(tag.id).append(' ');
         }
         libraryIds = ids.toString().trim();
 

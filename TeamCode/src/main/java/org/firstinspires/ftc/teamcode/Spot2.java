@@ -13,7 +13,7 @@ public class Spot2 extends FTC30741Base {
     public void runOpMode() throws InterruptedException {
         initOpMode(true, true, true, true, false);
         initVision();
-        vision.setManualExposure(15, 100);   // exposure ms, gain - robot is still when it reads the tag
+        vision.setManualExposure(6, 25);   // exposure ms, gain - robot is still when it reads the tag
 
         telemetry.addLine("");
         telemetry.update();
@@ -22,11 +22,10 @@ public class Spot2 extends FTC30741Base {
         double giveUpTime = now() + 30.0;
 
         if (opModeIsActive() && now() < giveUpTime) {
-
-            while (vision.getDetections().isEmpty() && now() < giveUpTime - 15) {
+            while (!vision.hasSpot2() && now() < giveUpTime - 15) {
                 telemetry.addLine("Tag Not Found");
             }
-            if (!vision.getDetections().isEmpty()) {
+            if (vision.hasSpot2()) {
                 shooter.setForwardDirection();
                 shooter.setFloat();
                 shooter.startVelocitySpinUp(1000);
@@ -38,8 +37,8 @@ public class Spot2 extends FTC30741Base {
                 shooter.setPower(0);
             }
 
-            drive.driveTicks(drive.squares(0.5), 1, 0, 0);
-            drive.driveTicks(drive.squares(3), 0, -1, 0);
+            drive.driveTicks(drive.squares(0.75), -0.75, 0, 0);
+            drive.driveTicks(drive.squares(3), 0,-0.75 , 0);
             drive.driveRobotCentric(0, 0, 0);
 
             telemetry.update();
