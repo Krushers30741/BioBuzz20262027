@@ -33,7 +33,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * options        - reset "forward" to whichever way the robot is currently facing
  */
 @Config
-@Configurable
 @TeleOp(name = "TeleopDrive", group = "BIOBUZZ")
 public class TeleopDrive extends FTC30741Base {
 
@@ -41,7 +40,7 @@ public class TeleopDrive extends FTC30741Base {
     // Flowers, etc.) hard. Holding the left bumper scales everything down for precision.
     // Live-tunable from FTC Dashboard or Panels.
     public static double SLOW_MODE_SCALE = 0.4;
-
+    public static double SHOOTER_SPEED = 950;
     public static double STRAFE_GAIN = 1.3;
 
     // FTC teleop periods are 2:00 (120s). These fire a one-time rumble + LED color change as
@@ -84,7 +83,7 @@ public class TeleopDrive extends FTC30741Base {
             }
             if (shooter != null && gamepad1.leftBumperWasPressed()) {
                 shooter.setForwardDirection();
-                shooter.startVelocitySpinUp(1500.00);
+                shooter.startVelocitySpinUp(SHOOTER_SPEED);
                 conveyor.setDirectionForward();
                 if(shooter.isReady()){
                     conveyor.setPower(1.0);

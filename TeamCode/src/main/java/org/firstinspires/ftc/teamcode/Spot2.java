@@ -1,19 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
-
+@Config
 @Autonomous(name = "Spot2 - shoot all four Pollen", group = "Autos")
 public class Spot2 extends FTC30741Base {
-
+public static int EXPOSURE = 6;
+public static int GAIN = 25;
 
     @Override
     public void runOpMode() throws InterruptedException {
         initOpMode(true, true, true, true, false);
         initVision();
-        vision.setManualExposure(6, 25);   // exposure ms, gain - robot is still when it reads the tag
+        vision.setManualExposure(EXPOSURE, GAIN);   // exposure ms, gain - robot is still when it reads the tag
 
         telemetry.addLine("");
         telemetry.update();
