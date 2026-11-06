@@ -1,14 +1,28 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime; // Added for non-blocking timing
 
 import java.util.function.BooleanSupplier;
 
+@Config
 public class Shooter {
+
+    // Velocity-control tuning, live in FTC Dashboard (Configuration -> Shooter).
+    // Leave VELOCITY_F at 0 to keep the hub's built-in values. To tune: set F to
+    // 32767 / (max ticks per second from the Utility - Shooter Max Speed test), then raise P a
+    // little at a time (about 10% of F is a common start) until the speed snaps back quickly after
+    // a ball without oscillating. The new values apply the next time the shooter spins up.
+    public static double VELOCITY_P = 0;
+    public static double VELOCITY_I = 0;
+    public static double VELOCITY_D = 0;
+    public static double VELOCITY_F = 0;
+
 
     private final DcMotorEx rightShooterMotor;
     private final DcMotorEx leftShooterMotor;
@@ -34,6 +48,11 @@ public class Shooter {
     // Call this ONCE to initiate the spin-up sequence
     public void startVelocitySpinUp(double velocity) {
         this.targetVelocity = velocity;
+        if (VELOCITY_F > 0) {
+            PIDFCoefficients pidf = new PIDFCoefficients(VELOCITY_P, VELOCITY_I, VELOCITY_D, VELOCITY_F);
+            leftShooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+            rightShooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+        }
         leftShooterMotor.setVelocity(velocity);
         rightShooterMotor.setVelocity(velocity);
 
@@ -79,6 +98,12 @@ public class Shooter {
         }
         double needed = targetVelocity * READY_FRACTION;
         return getLeftShooterMotorVelocity() >= needed && getRightShooterMotorVelocity() >= needed;
+    }
+
+    /** The hub's velocity-control values currently in use on the left shooter motor (debug). */
+    public String getVelocityPidf() {
+        PIDFCoefficients c = leftShooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        return String.format("P=%.2f I=%.2f D=%.2f F=%.2f", c.p, c.i, c.d, c.f);
     }
 
     public double getTargetVelocity() {

@@ -8,6 +8,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * BIOBUZZ TeleOp — field-centric mecanum drive.
@@ -39,6 +40,9 @@ public class TeleopDrive extends FTC30741Base {
     // Live-tunable from FTC Dashboard or Panels.
     public static double SLOW_MODE_SCALE = 0.4;
     public static double SHOOTER_SPEED = 655;
+    // The wheels must stay at speed this long (ms) before the conveyor feeds a ball. Gives each
+    // shot a settled, full-speed start instead of firing the instant speed is touched.
+    public static double SETTLE_MS = 150;
     public static double STRAFE_GAIN = 1.3;
 
     // FTC teleop periods are 2:00 (120s). These fire a one-time rumble + LED color change as
@@ -50,6 +54,15 @@ public class TeleopDrive extends FTC30741Base {
     private boolean finalWarningGiven = false;
     private boolean shooterRunning = false;      // left bumper pressed, waiting to feed / feeding
     private boolean conveyorFeeding = false;     // conveyor is running right now (shooter at speed)
+    private final ElapsedTime settleTimer = new ElapsedTime();
+    private boolean wasAtSpeed = false;
+    // Shot log (shown in Panels): how far the speed fell on the last dip and how long it took back.
+    private int dipCount = 0;
+    private double lastDipLowSpeed = 0;
+    private double lastRecoveryMs = 0;
+    private double currentDipLow = 0;
+    private boolean inDip = false;
+    private final ElapsedTime dipTimer = new ElapsedTime();
     private boolean reverseWasActive = false;    // right trigger held last loop
 
     private TelemetryManager panelsTelemetry;
@@ -139,11 +152,38 @@ public class TeleopDrive extends FTC30741Base {
             conveyor.setPower(0.0);
             shooterRunning = true;
             conveyorFeeding = false;
+            wasAtSpeed = false;
+            inDip = false;
+            dipCount = 0;
         }
         // Checked every loop: feed ONLY while both wheels are up to speed. If the speed drops
         // (a ball pulls it down), the conveyor stops until the wheels recover, then resumes.
         if (shooterRunning) {
-            conveyorFeeding = shooter.atSpeed();
+            boolean atSpeed = shooter.atSpeed();
+            double lowest = Math.min(shooter.getLeftShooterMotorVelocity(),
+                    shooter.getRightShooterMotorVelocity());
+
+            if (atSpeed && !wasAtSpeed) {
+                settleTimer.reset();            // just got back to speed - start the settle clock
+                if (inDip) {                    // log the dip that just ended
+                    lastDipLowSpeed = currentDipLow;
+                    lastRecoveryMs = dipTimer.milliseconds();
+                    inDip = false;
+                }
+            }
+            if (!atSpeed && conveyorFeeding && !inDip) {
+                inDip = true;                   // speed just fell while feeding: a ball went through
+                dipCount++;
+                dipTimer.reset();
+                currentDipLow = lowest;
+            }
+            if (inDip) {
+                currentDipLow = Math.min(currentDipLow, lowest);
+            }
+            wasAtSpeed = atSpeed;
+
+            // Feed only while at speed AND settled for SETTLE_MS.
+            conveyorFeeding = atSpeed && settleTimer.milliseconds() >= SETTLE_MS;
             conveyor.setPower(conveyorFeeding ? 1.0 : 0.0);
         }
     }
@@ -183,6 +223,11 @@ public class TeleopDrive extends FTC30741Base {
             panelsTelemetry.addData("shooter R velocity", shooter.getRightShooterMotorVelocity());
             panelsTelemetry.addData("shooter at speed", shooter.atSpeed());
             panelsTelemetry.addData("conveyor feeding", conveyorFeeding);
+            panelsTelemetry.addData("shots (speed dips)", dipCount);
+            panelsTelemetry.addData("last dip lowest speed", lastDipLowSpeed);
+            panelsTelemetry.addData("last recovery (ms)", lastRecoveryMs);
+            panelsTelemetry.addData("shooter PIDF", shooter.getVelocityPidf());
+            panelsTelemetry.addData("battery (V)", drive.getBatteryVoltage());
         }
         panelsTelemetry.addData("time left (s)", TELEOP_DURATION_SECONDS - now());
         panelsTelemetry.addData("raw left_stick_x", gamepad1.left_stick_x);
