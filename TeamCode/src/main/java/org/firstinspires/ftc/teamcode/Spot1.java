@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 //hey, its me, its jsfdnmssfs;andios3hjnr45mnmfdm67ejek
+import static org.firstinspires.ftc.teamcode.TeleopDrive.SHOOTER_SPEED;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -25,7 +27,7 @@ public class Spot1 extends FTC30741Base {
 
         if (opModeIsActive()) {
            shooter.setForwardDirection();
-           shooter.startVelocitySpinUp(2000);
+           shooter.startVelocitySpinUp(SHOOTER_SPEED);
            conveyor.setDirectionForward();
            while(!shooter.isReady()){}
            conveyor.setPower(1);

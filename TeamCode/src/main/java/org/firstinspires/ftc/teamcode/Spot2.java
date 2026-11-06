@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.TeleopDrive.SHOOTER_SPEED;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -30,7 +32,7 @@ public static int GAIN = 25;
             if (vision.hasSpot2()) {
                 shooter.setForwardDirection();
                 shooter.setFloat();
-                shooter.startVelocitySpinUp(1000);
+                shooter.startVelocitySpinUp(SHOOTER_SPEED);
                 shooter.waitUntilReady(5.0, this::opModeIsActive);
                 conveyor.setDirectionForward();
                 conveyor.setPower(1);

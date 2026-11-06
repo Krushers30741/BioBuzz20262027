@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * directly.</p>
  */
 public class VisionSystem {
-
+    public static final int DISTANCE_FROM_WALL = 65;
     // The tag the Exercises aim at. These are the real BIOBUZZ tags from our kit (36h11 family).
     // Official Hive tag IDs: red 0-7, blue 38-45. Change this to aim at a different tag.
     public static final int PRACTICE_TAG_ID = 39;
@@ -215,6 +215,15 @@ public class VisionSystem {
     /** Camera status, e.g. STREAMING. Anything else (or an error) means the camera isn't delivering images. */
     public String getCameraState() {
         return String.valueOf(visionPortal.getCameraState());
+    }
+    public int getDistanceDiff(int tagId) {
+        AprilTagSingleDetection tagInfo = findTag(tagId);
+
+        if (tagInfo != null && tagInfo.ftcPose != null) {
+            // Option A: Use straight-line distance (Range)
+            return DISTANCE_FROM_WALL - (int) tagInfo.ftcPose.range;
+        }
+        return 0;
     }
 
     /** Frames per second the camera is delivering. Near 0 means images aren't arriving. */

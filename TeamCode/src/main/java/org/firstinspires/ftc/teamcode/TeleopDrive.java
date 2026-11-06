@@ -4,12 +4,10 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * BIOBUZZ TeleOp — field-centric mecanum drive.
@@ -40,7 +38,7 @@ public class TeleopDrive extends FTC30741Base {
     // Flowers, etc.) hard. Holding the left bumper scales everything down for precision.
     // Live-tunable from FTC Dashboard or Panels.
     public static double SLOW_MODE_SCALE = 0.4;
-    public static double SHOOTER_SPEED = 950;
+    public static double SHOOTER_SPEED = 650;
     public static double STRAFE_GAIN = 1.3;
 
     // FTC teleop periods are 2:00 (120s). These fire a one-time rumble + LED color change as
@@ -77,9 +75,18 @@ public class TeleopDrive extends FTC30741Base {
             // drive.driveFieldCentric(forward, strafe, turn);
             drive.driveRobotCentricHeadingHold(forward, strafe, turn);
             if (intake != null)  {
-                intake.setPower(gamepad1.right_bumper ? 0.75:0.0);
-                conveyor.setDirectionForward();
-                conveyor.setPower(gamepad1.right_bumper ?1:0.0);
+                if(gamepad1.right_bumper){
+                    intake.setPower(gamepad1.right_bumper ? 0.75:0.0);
+                    conveyor.setDirectionForward();
+                    conveyor.setPower(gamepad1.right_bumper ?1:0.0);
+                }
+                if(gamepad1.right_trigger > 0) {
+                    intake.setPower(gamepad1.right_trigger > 0 ? 0.75 : 0.0);
+                    conveyor.setDirectionReverse();
+                    conveyor.setPower(gamepad1.right_trigger > 0 ? 1 : 0.0);
+                    shooter.setReverseDirection();
+                    shooter.setPower(gamepad1.right_trigger > 0 ? 1 : 0.0);
+                }
             }
             if (shooter != null && gamepad1.leftBumperWasPressed()) {
                 shooter.setForwardDirection();
@@ -87,6 +94,8 @@ public class TeleopDrive extends FTC30741Base {
                 conveyor.setDirectionForward();
                 if(shooter.isReady()){
                     conveyor.setPower(1.0);
+                }else{
+                    conveyor.setPower(0.0);
                 }
             }
             if (shooter != null && gamepad1.left_trigger_pressed){
