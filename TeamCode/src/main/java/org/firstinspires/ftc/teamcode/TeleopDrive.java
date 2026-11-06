@@ -64,71 +64,14 @@ public class TeleopDrive extends FTC30741Base {
         waitForStart();
 
         while (opModeIsActive()) {
-            if (gamepad1.options) {
-                drive.resetHeading();
-            }
-
-            double slowModeScale = gamepad1.left_bumper ? SLOW_MODE_SCALE : 1.0;
-            double forward = gamepad1.left_stick_y * slowModeScale;
-            double strafe = gamepad1.left_stick_x * slowModeScale;
-            double turn = gamepad1.right_stick_x * slowModeScale;
-            // drive.driveFieldCentric(forward, strafe, turn);
-            drive.driveRobotCentricHeadingHold(forward, strafe, turn);
-            if (intake != null && gamepad1.right_bumper) {
-                intake.setPower(gamepad1.right_bumper ? 0.75 : 0.0);
-                conveyor.setDirectionForward();
-                conveyor.setPower(gamepad1.right_bumper ? 1.0 : 0.0);
-            }
-           /* if(intake != null && gamepad1.right_trigger > 0) {
-                    intake.setPower(gamepad1.right_trigger > 0 ? 0.75 : 0.0);
-                    conveyor.setDirectionReverse();
-                    conveyor.setPower(gamepad1.right_trigger > 0 ? 1 : 0.0);
-                    shooter.setReverseDirection();
-                    shooter.setPower(gamepad1.right_trigger > 0 ? 1 : 0.0);
-            }*/
-            if (shooter != null && gamepad1.leftBumperWasPressed()) {
-                shooter.setForwardDirection();
-                shooter.startVelocitySpinUp(SHOOTER_SPEED);
-                intake.setPower(0);
-                conveyor.setDirectionForward();
-                panelsTelemetry.addData("isReady:", shooter.isReady());
-                panelsTelemetry.addData("left Velocity:", shooter.getLeftShooterMotorVelocity());
-                panelsTelemetry.addData("right Velocity:", shooter.getRightShooterMotorVelocity());
-                if(shooter.isReady()){
-                    conveyor.setPower(1.0);
-                }else{
-                    conveyor.setPower(0.0);
-                }
-            }
-            if (shooter != null && gamepad1.left_trigger_pressed){
-                shooter.setPower(0);
-                conveyor.setPower(0);
-                intake.setPower(0);
-            }
-            /** if (conveyor!= null) {
-             *  conveyor.setDirectionReverse();
-             * conveyor.setPower(gamepad1.a ? 1.0 : 0.0);
-             *}
-             */
+            engageDrive();
+            runIntake();
+            reverseIntake();
+            shootArtifacts();
+            stopShooting();
+            panelsTelemotry();
             checkEndgameWarnings();
 
-            panelsTelemetry.addData("heading (deg)", drive.getHeadingDegrees());
-            panelsTelemetry.addData("slow mode", slowModeScale < 1.0 ? "ON" : "off");
-            panelsTelemetry.addData("time left (s)", TELEOP_DURATION_SECONDS - now());
-            panelsTelemetry.addData("raw left_stick_x", gamepad1.left_stick_x);
-            panelsTelemetry.addData("raw left_stick_y", gamepad1.left_stick_y);
-            panelsTelemetry.addData("raw right_stick_x", gamepad1.right_stick_x);
-            double[] wheelVolocities = drive.getWheelVelocities();
-            double[] wheelCurrents = drive.getWheelCurrents();
-            panelsTelemetry.addData("lf speed (ticks/secs)", wheelVolocities[0]);
-            panelsTelemetry.addData("rf speed (ticks/secs)", wheelVolocities[1]);
-            panelsTelemetry.addData("lb speed (ticks/secs)", wheelVolocities[2]);
-            panelsTelemetry.addData("rb speed (ticks/secs)", wheelVolocities[3]);
-            panelsTelemetry.addData("lf current (a)", wheelCurrents[0]);
-            panelsTelemetry.addData("rf current (a)", wheelCurrents[1]);
-            panelsTelemetry.addData("lb current (a)", wheelCurrents[2]);
-            panelsTelemetry.addData("rb current (a)", wheelCurrents[3]);
-            panelsTelemetry.update(telemetry);
         }
     }
 
@@ -150,5 +93,78 @@ public class TeleopDrive extends FTC30741Base {
             gamepad1.rumble(1.0, 1.0, 800);
             gamepad1.setLedColor(1, 0, 0, Gamepad.LED_DURATION_CONTINUOUS); // red
         }
+    }
+    public void runIntake(){
+        if (intake != null && gamepad1.right_bumper) {
+            intake.setPower(gamepad1.right_bumper ? 0.75 : 0.0);
+            conveyor.setDirectionForward();
+            conveyor.setPower(gamepad1.right_bumper ? 1.0 : 0.0);
+        }
+    }
+    public void reverseIntake(){
+        if(intake != null && gamepad1.right_trigger > 0) {
+            intake.setPower(gamepad1.right_trigger > 0 ? 0.75 : 0.0);
+            conveyor.setDirectionReverse();
+            conveyor.setPower(gamepad1.right_trigger > 0 ? 1 : 0.0);
+            shooter.setReverseDirection();
+            shooter.setPower(gamepad1.right_trigger > 0 ? 1 : 0.0);
+        }
+    }
+
+    public void shootArtifacts(){
+        if (shooter != null && gamepad1.leftBumperWasPressed()) {
+            shooter.setForwardDirection();
+            shooter.startVelocitySpinUp(SHOOTER_SPEED);
+            intake.setPower(0);
+            conveyor.setDirectionForward();
+            panelsTelemetry.addData("isReady:", shooter.isReady());
+            panelsTelemetry.addData("left Velocity:", shooter.getLeftShooterMotorVelocity());
+            panelsTelemetry.addData("right Velocity:", shooter.getRightShooterMotorVelocity());
+            if(shooter.isReady()){
+                conveyor.setPower(1.0);
+            }else{
+                conveyor.setPower(0.0);
+            }
+        }
+    }
+
+    public void stopShooting(){
+        if (shooter != null && gamepad1.left_trigger_pressed){
+            shooter.setPower(0);
+            conveyor.setPower(0);
+            intake.setPower(0);
+        }
+    }
+    public void engageDrive(){
+        if (gamepad1.options) {
+            drive.resetHeading();
+        }
+
+        SLOW_MODE_SCALE = gamepad1.left_bumper ? SLOW_MODE_SCALE : 1.0;
+        double forward = gamepad1.left_stick_y * SLOW_MODE_SCALE;
+        double strafe = gamepad1.left_stick_x * SLOW_MODE_SCALE;
+        double turn = gamepad1.right_stick_x * SLOW_MODE_SCALE;
+        // drive.driveFieldCentric(forward, strafe, turn);
+        drive.driveRobotCentricHeadingHold(forward, strafe, turn);
+    }
+
+    public void panelsTelemotry(){
+        panelsTelemetry.addData("heading (deg)", drive.getHeadingDegrees());
+        panelsTelemetry.addData("slow mode", SLOW_MODE_SCALE < 1.0 ? "ON" : "off");
+        panelsTelemetry.addData("time left (s)", TELEOP_DURATION_SECONDS - now());
+        panelsTelemetry.addData("raw left_stick_x", gamepad1.left_stick_x);
+        panelsTelemetry.addData("raw left_stick_y", gamepad1.left_stick_y);
+        panelsTelemetry.addData("raw right_stick_x", gamepad1.right_stick_x);
+        double[] wheelVolocities = drive.getWheelVelocities();
+        double[] wheelCurrents = drive.getWheelCurrents();
+        panelsTelemetry.addData("lf speed (ticks/secs)", wheelVolocities[0]);
+        panelsTelemetry.addData("rf speed (ticks/secs)", wheelVolocities[1]);
+        panelsTelemetry.addData("lb speed (ticks/secs)", wheelVolocities[2]);
+        panelsTelemetry.addData("rb speed (ticks/secs)", wheelVolocities[3]);
+        panelsTelemetry.addData("lf current (a)", wheelCurrents[0]);
+        panelsTelemetry.addData("rf current (a)", wheelCurrents[1]);
+        panelsTelemetry.addData("lb current (a)", wheelCurrents[2]);
+        panelsTelemetry.addData("rb current (a)", wheelCurrents[3]);
+        panelsTelemetry.update(telemetry);
     }
 }
