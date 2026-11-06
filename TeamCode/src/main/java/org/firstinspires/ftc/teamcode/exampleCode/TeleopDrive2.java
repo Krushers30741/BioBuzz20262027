@@ -33,7 +33,7 @@ import org.firstinspires.ftc.teamcode.FTC30741Base;
  * options        - reset "forward" to whichever way the robot is currently facing
  */
 @Config
-@TeleOp(name = "TeleopDrive", group = "BIOBUZZ")
+@TeleOp(name = "TeleopDrive2", group = "BIOBUZZ")
 public class TeleopDrive2 extends FTC30741Base {
 
     // Driving at full power all the time makes fine positioning (lining up on the Hive,

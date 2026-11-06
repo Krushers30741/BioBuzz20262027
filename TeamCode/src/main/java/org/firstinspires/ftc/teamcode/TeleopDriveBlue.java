@@ -31,7 +31,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  * options        - reset "forward" to whichever way the robot is currently facing
  */
 @Config
-@TeleOp(name = "TeleopDrive", group = "BIOBUZZ")
+@TeleOp(name = "TeleopDriveBlue", group = "BIOBUZZ")
 public class TeleopDriveBlue extends FTC30741Base {
 
     // Driving at full power all the time makes fine positioning (lining up on the Hive,
