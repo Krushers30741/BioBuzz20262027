@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.FTC30741Base;
 
 
-@Autonomous(name = "Spot1 - shoot all four Pollen", group = "Autos")
+@Autonomous(name = "test_auto", group = "Autos")
 public class test_auto extends FTC30741Base {
 
 
