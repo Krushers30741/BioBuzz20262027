@@ -8,7 +8,6 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * BIOBUZZ TeleOp — field-centric mecanum drive.
@@ -40,9 +39,6 @@ public class TeleopDrive extends FTC30741Base {
     // Live-tunable from FTC Dashboard or Panels.
     public static double SLOW_MODE_SCALE = 0.4;
     public static double SHOOTER_SPEED = 655;
-    // When the shooter speed dips while feeding, the conveyor reverses this long (ms) to back
-    // the ball off the wheels, then feeds forward again once the wheels are back up to speed.
-    public static double CONVEYOR_BACKOFF_MS = 100;
     public static double STRAFE_GAIN = 1.3;
 
     // FTC teleop periods are 2:00 (120s). These fire a one-time rumble + LED color change as
@@ -54,8 +50,6 @@ public class TeleopDrive extends FTC30741Base {
     private boolean finalWarningGiven = false;
     private boolean shooterRunning = false;      // left bumper pressed, waiting to feed / feeding
     private boolean conveyorFeeding = false;     // conveyor is running right now (shooter at speed)
-    private boolean backingOff = false;          // conveyor briefly reversing after a speed dip
-    private final ElapsedTime backoffTimer = new ElapsedTime();
     private boolean reverseWasActive = false;    // right trigger held last loop
 
     private TelemetryManager panelsTelemetry;
@@ -120,7 +114,6 @@ public class TeleopDrive extends FTC30741Base {
             shooter.setPower(1.0);
             shooterRunning = false;
             conveyorFeeding = false;
-            backingOff = false;
         } else if (intake != null && reverseWasActive) {
             // Trigger just released: stop everything it was running, once.
             intake.setPower(0);
@@ -146,32 +139,12 @@ public class TeleopDrive extends FTC30741Base {
             conveyor.setPower(0.0);
             shooterRunning = true;
             conveyorFeeding = false;
-            backingOff = false;
         }
-        // Checked every loop: feed ONLY while both wheels are up to speed. If the speed dips
-        // (a ball pulls it down), reverse the conveyor briefly, then feed again at speed.
+        // Checked every loop: feed ONLY while both wheels are up to speed. If the speed drops
+        // (a ball pulls it down), the conveyor stops until the wheels recover, then resumes.
         if (shooterRunning) {
-            if (backingOff) {
-                // Reversing for a moment; when the time is up, stop and go back to normal.
-                if (backoffTimer.milliseconds() >= CONVEYOR_BACKOFF_MS) {
-                    backingOff = false;
-                    conveyor.setPower(0.0);
-                    conveyor.setDirectionForward();
-                }
-            } else if (shooter.atSpeed()) {
-                if (!conveyorFeeding) {
-                    conveyor.setDirectionForward();
-                    conveyor.setPower(1.0);
-                    conveyorFeeding = true;
-                }
-            } else if (conveyorFeeding) {
-                // Was feeding and the speed just dipped: back the ball off for a moment.
-                conveyorFeeding = false;
-                backingOff = true;
-                backoffTimer.reset();
-                conveyor.setDirectionReverse();
-                conveyor.setPower(1.0);
-            }
+            conveyorFeeding = shooter.atSpeed();
+            conveyor.setPower(conveyorFeeding ? 1.0 : 0.0);
         }
     }
 
@@ -184,7 +157,6 @@ public class TeleopDrive extends FTC30741Base {
             }
             shooterRunning = false;
             conveyorFeeding = false;
-            backingOff = false;
         }
     }
     public void engageDrive(){
