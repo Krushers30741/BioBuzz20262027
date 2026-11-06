@@ -49,7 +49,7 @@ public class TeleopDrive extends FTC30741Base {
     private boolean warningGiven = false;
     private boolean finalWarningGiven = false;
     private boolean shooterRunning = false;      // left bumper pressed, waiting to feed / feeding
-    private boolean conveyorFeeding = false;     // conveyor started because shooter hit speed
+    private boolean conveyorFeeding = false;     // conveyor is running right now (shooter at speed)
     private boolean reverseWasActive = false;    // right trigger held last loop
 
     private TelemetryManager panelsTelemetry;
@@ -127,8 +127,8 @@ public class TeleopDrive extends FTC30741Base {
         if (shooter == null) {
             return;
         }
-        // Left bumper (one press): start the shooter. The conveyor then starts BY ITSELF as
-        // soon as both wheels are up to speed - no second press.
+        // Left bumper (one press): start the shooter. The conveyor runs BY ITSELF whenever both
+        // wheels are up to speed - no second press.
         if (gamepad1.leftBumperWasPressed()) {
             shooter.setForwardDirection();
             shooter.startVelocitySpinUp(SHOOTER_SPEED);
@@ -140,10 +140,11 @@ public class TeleopDrive extends FTC30741Base {
             shooterRunning = true;
             conveyorFeeding = false;
         }
-        // Checked every loop. Once feeding starts it keeps feeding, even if speed dips.
-        if (shooterRunning && !conveyorFeeding && shooter.atSpeed()) {
-            conveyor.setPower(1.0);
-            conveyorFeeding = true;
+        // Checked every loop: feed ONLY while both wheels are up to speed. If the speed drops
+        // (a ball pulls it down), the conveyor stops until the wheels recover, then resumes.
+        if (shooterRunning) {
+            conveyorFeeding = shooter.atSpeed();
+            conveyor.setPower(conveyorFeeding ? 1.0 : 0.0);
         }
     }
 
