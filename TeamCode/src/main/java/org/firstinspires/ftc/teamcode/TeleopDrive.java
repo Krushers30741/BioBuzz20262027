@@ -43,6 +43,12 @@ public class TeleopDrive extends FTC30741Base {
     // The wheels must stay at speed this long (ms) before the conveyor feeds a ball. Gives each
     // shot a settled, full-speed start instead of firing the instant speed is touched.
     public static double SETTLE_MS = 150;
+    // The conveyor feeds in short PULSES (one ball at a time) instead of running nonstop, so the
+    // next ball is not already squeezed against the wheels while they are still recovering.
+    // FEED_PULSE_MS = how long the conveyor runs per ball (tune until ONE ball goes through).
+    // FEED_GAP_MS = the minimum pause after a pulse before the next one can start.
+    public static double FEED_PULSE_MS = 250;
+    public static double FEED_GAP_MS = 150;
     public static double STRAFE_GAIN = 1.3;
 
     // FTC teleop periods are 2:00 (120s). These fire a one-time rumble + LED color change as
@@ -55,6 +61,9 @@ public class TeleopDrive extends FTC30741Base {
     private boolean shooterRunning = false;      // left bumper pressed, waiting to feed / feeding
     private boolean conveyorFeeding = false;     // conveyor is running right now (shooter at speed)
     private final ElapsedTime settleTimer = new ElapsedTime();
+    private final ElapsedTime pulseTimer = new ElapsedTime();
+    private final ElapsedTime gapTimer = new ElapsedTime();
+    private boolean pulseActive = false;
     private boolean wasAtSpeed = false;
     // Shot log (shown in Panels): how far the speed fell on the last dip and how long it took back.
     private int dipCount = 0;
@@ -155,6 +164,8 @@ public class TeleopDrive extends FTC30741Base {
             wasAtSpeed = false;
             inDip = false;
             dipCount = 0;
+            pulseActive = false;
+            gapTimer.reset();
         }
         // Checked every loop: feed ONLY while both wheels are up to speed. If the speed drops
         // (a ball pulls it down), the conveyor stops until the wheels recover, then resumes.
@@ -171,8 +182,8 @@ public class TeleopDrive extends FTC30741Base {
                     inDip = false;
                 }
             }
-            if (!atSpeed && conveyorFeeding && !inDip) {
-                inDip = true;                   // speed just fell while feeding: a ball went through
+            if (!atSpeed && wasAtSpeed && !inDip) {
+                inDip = true;                   // speed just fell after being at speed: a ball went through
                 dipCount++;
                 dipTimer.reset();
                 currentDipLow = lowest;
@@ -182,9 +193,20 @@ public class TeleopDrive extends FTC30741Base {
             }
             wasAtSpeed = atSpeed;
 
-            // Feed only while at speed AND settled for SETTLE_MS.
-            conveyorFeeding = atSpeed && settleTimer.milliseconds() >= SETTLE_MS;
-            conveyor.setPower(conveyorFeeding ? 1.0 : 0.0);
+            // Feed one ball per pulse: only when at speed, settled for SETTLE_MS, and the pause
+            // since the last pulse is over. A pulse ends after FEED_PULSE_MS, or immediately if
+            // the speed drops below the target.
+            boolean ready = atSpeed && settleTimer.milliseconds() >= SETTLE_MS;
+            if (pulseActive && (!atSpeed || pulseTimer.milliseconds() >= FEED_PULSE_MS)) {
+                pulseActive = false;
+                gapTimer.reset();
+            }
+            if (!pulseActive && ready && gapTimer.milliseconds() >= FEED_GAP_MS) {
+                pulseActive = true;
+                pulseTimer.reset();
+            }
+            conveyorFeeding = pulseActive;
+            conveyor.setPower(pulseActive ? 1.0 : 0.0);
         }
     }
 
@@ -197,6 +219,7 @@ public class TeleopDrive extends FTC30741Base {
             }
             shooterRunning = false;
             conveyorFeeding = false;
+            pulseActive = false;
         }
     }
     public void engageDrive(){
