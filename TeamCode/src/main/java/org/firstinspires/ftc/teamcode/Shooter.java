@@ -14,6 +14,10 @@ public class Shooter {
     private final DcMotorEx leftShooterMotor;
 
     // Asynchronous tracking variables
+    // "At speed" means BOTH wheels reach this fraction of the target. A motor in velocity mode
+    // hovers around its target and often sits just under it, so 100% can never be met.
+    private static final double READY_FRACTION = 0.97;
+
     private final ElapsedTime timer = new ElapsedTime();
     private double targetVelocity = 0;
     private int waitCounter = 0;
@@ -46,7 +50,7 @@ public class Shooter {
         }
 
         // Check if we hit target velocity
-        if (getLeftShooterMotorVelocity() >= targetVelocity && getRightShooterMotorVelocity() >= targetVelocity) {
+        if (atSpeed()) {
             isSpinningUp = false;
             return true;
         }
@@ -62,6 +66,23 @@ public class Shooter {
         }
 
         return false;
+    }
+
+    /**
+     * True whenever both wheels are at (97% of) the target speed. Unlike isReady() this can be
+     * asked every loop - it does not use up its answer and it has no timeout, so true really
+     * means "up to speed".
+     */
+    public boolean atSpeed() {
+        if (targetVelocity <= 0) {
+            return false;
+        }
+        double needed = targetVelocity * READY_FRACTION;
+        return getLeftShooterMotorVelocity() >= needed && getRightShooterMotorVelocity() >= needed;
+    }
+
+    public double getTargetVelocity() {
+        return targetVelocity;
     }
 
     /**

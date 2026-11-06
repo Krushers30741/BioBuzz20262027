@@ -48,6 +48,9 @@ public class TeleopDrive extends FTC30741Base {
     private static final double TELEOP_DURATION_SECONDS = 120.0;
     private boolean warningGiven = false;
     private boolean finalWarningGiven = false;
+    private boolean shooterRunning = false;      // left bumper pressed, waiting to feed / feeding
+    private boolean conveyorFeeding = false;     // conveyor started because shooter hit speed
+    private boolean reverseWasActive = false;    // right trigger held last loop
 
     private TelemetryManager panelsTelemetry;
 
@@ -102,29 +105,45 @@ public class TeleopDrive extends FTC30741Base {
         }
     }
     public void reverseIntake(){
-        if(intake != null && gamepad1.right_trigger > 0) {
-            intake.setPower(gamepad1.right_trigger > 0 ? 0.75 : 0.0);
+        boolean active = gamepad1.right_trigger > 0;
+        if (intake != null && active) {
+            intake.setPower(0.75);
             conveyor.setDirectionReverse();
-            conveyor.setPower(gamepad1.right_trigger > 0 ? 1 : 0.0);
+            conveyor.setPower(1.0);
             shooter.setReverseDirection();
-            shooter.setPower(gamepad1.right_trigger > 0 ? 1 : 0.0);
+            shooter.setPower(1.0);
+            shooterRunning = false;
+            conveyorFeeding = false;
+        } else if (intake != null && reverseWasActive) {
+            // Trigger just released: stop everything it was running, once.
+            intake.setPower(0);
+            conveyor.setPower(0);
+            shooter.setPower(0);
         }
+        reverseWasActive = active;
     }
 
     public void shootArtifacts(){
-        if (shooter != null && gamepad1.leftBumperWasPressed()) {
+        if (shooter == null) {
+            return;
+        }
+        // Left bumper (one press): start the shooter. The conveyor then starts BY ITSELF as
+        // soon as both wheels are up to speed - no second press.
+        if (gamepad1.leftBumperWasPressed()) {
             shooter.setForwardDirection();
             shooter.startVelocitySpinUp(SHOOTER_SPEED);
-            intake.setPower(0);
-            conveyor.setDirectionForward();
-            panelsTelemetry.addData("isReady:", shooter.isReady());
-            panelsTelemetry.addData("left Velocity:", shooter.getLeftShooterMotorVelocity());
-            panelsTelemetry.addData("right Velocity:", shooter.getRightShooterMotorVelocity());
-            if(shooter.isReady()){
-                conveyor.setPower(1.0);
-            }else{
-                conveyor.setPower(0.0);
+            if (intake != null) {
+                intake.setPower(0);
             }
+            conveyor.setDirectionForward();
+            conveyor.setPower(0.0);
+            shooterRunning = true;
+            conveyorFeeding = false;
+        }
+        // Checked every loop. Once feeding starts it keeps feeding, even if speed dips.
+        if (shooterRunning && !conveyorFeeding && shooter.atSpeed()) {
+            conveyor.setPower(1.0);
+            conveyorFeeding = true;
         }
     }
 
@@ -132,7 +151,11 @@ public class TeleopDrive extends FTC30741Base {
         if (shooter != null && gamepad1.left_trigger_pressed){
             shooter.setPower(0);
             conveyor.setPower(0);
-            intake.setPower(0);
+            if (intake != null) {
+                intake.setPower(0);
+            }
+            shooterRunning = false;
+            conveyorFeeding = false;
         }
     }
     public void engageDrive(){
@@ -140,17 +163,26 @@ public class TeleopDrive extends FTC30741Base {
             drive.resetHeading();
         }
 
-        SLOW_MODE_SCALE = gamepad1.left_bumper ? SLOW_MODE_SCALE : 1.0;
-        double forward = gamepad1.left_stick_y * SLOW_MODE_SCALE;
-        double strafe = gamepad1.left_stick_x * SLOW_MODE_SCALE;
-        double turn = gamepad1.right_stick_x * SLOW_MODE_SCALE;
+        // Use a local value - the old line overwrote SLOW_MODE_SCALE itself, so after the first
+        // loop slow mode was gone for good.
+        double slowModeScale = gamepad1.left_bumper ? SLOW_MODE_SCALE : 1.0;
+        double forward = gamepad1.left_stick_y * slowModeScale;
+        double strafe = gamepad1.left_stick_x * slowModeScale;
+        double turn = gamepad1.right_stick_x * slowModeScale;
         // drive.driveFieldCentric(forward, strafe, turn);
         drive.driveRobotCentricHeadingHold(forward, strafe, turn);
     }
 
     public void panelsTelemotry(){
         panelsTelemetry.addData("heading (deg)", drive.getHeadingDegrees());
-        panelsTelemetry.addData("slow mode", SLOW_MODE_SCALE < 1.0 ? "ON" : "off");
+        panelsTelemetry.addData("slow mode", gamepad1.left_bumper ? "ON" : "off");
+        if (shooter != null) {
+            panelsTelemetry.addData("shooter target", shooter.getTargetVelocity());
+            panelsTelemetry.addData("shooter L velocity", shooter.getLeftShooterMotorVelocity());
+            panelsTelemetry.addData("shooter R velocity", shooter.getRightShooterMotorVelocity());
+            panelsTelemetry.addData("shooter at speed", shooter.atSpeed());
+            panelsTelemetry.addData("conveyor feeding", conveyorFeeding);
+        }
         panelsTelemetry.addData("time left (s)", TELEOP_DURATION_SECONDS - now());
         panelsTelemetry.addData("raw left_stick_x", gamepad1.left_stick_x);
         panelsTelemetry.addData("raw left_stick_y", gamepad1.left_stick_y);
