@@ -36,7 +36,7 @@ public class TeleopDrive extends FTC30741Base {
     // Flowers, etc.) hard. Holding the left bumper scales everything down for precision.
     // Live-tunable from FTC Dashboard or Panels.
     public static double SLOW_MODE_SCALE = 0.4;
-    public static double SHOOTER_SPEED = 655;
+    public static double SHOOTER_SPEED = 677;
     // The wheels must stay at speed this long (ms) before the conveyor feeds a ball. Gives each
     // shot a settled, full-speed start instead of firing the instant speed is touched.
     public static double SETTLE_MS = 150;
@@ -128,6 +128,7 @@ public class TeleopDrive extends FTC30741Base {
     }
     public void runIntake(){
         if (intake != null && gamepad1.right_bumper) {
+            intake.setDirectionForward();
             intake.setPower(0.75);
             conveyor.setDirectionForward();
             conveyor.setPower(1.0);
@@ -136,11 +137,12 @@ public class TeleopDrive extends FTC30741Base {
     public void reverseIntake(){
         boolean active = gamepad1.right_trigger > 0;
         if (intake != null && active) {
+            intake.setDirectionReverse();
             intake.setPower(0.75);
             conveyor.setDirectionReverse();
             conveyor.setPower(1.0);
-            shooter.setReverseDirection();
-            shooter.setPower(1.0);
+            //shooter.setReverseDirection();
+            //shooter.setPower(1.0);
             shooterRunning = false;
             conveyorFeeding = false;
         } else if (intake != null && reverseWasActive) {
