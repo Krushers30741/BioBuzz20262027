@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.TeleopDrive.SHOOTER_SPEED;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -12,6 +10,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 public class Spot2 extends FTC30741Base {
 public static int EXPOSURE = 6;
 public static int GAIN = 25;
+// Total seconds for the shot, spin-up included. Tune live in Dashboard under Spot2.
+public static double SHOOT_SECONDS = 12.0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -30,15 +30,9 @@ public static int GAIN = 25;
                 telemetry.addLine("Tag Not Found");
             }
             if (vision.hasSpot2()) {
-                shooter.setForwardDirection();
                 shooter.setFloat();
-                shooter.startVelocitySpinUp(SHOOTER_SPEED);
-                shooter.waitUntilReady(5.0, this::opModeIsActive);
-                conveyor.setDirectionForward();
-                conveyor.setPower(1);
-                wait(10.0);
-                conveyor.setPower(0);
-                shooter.setPower(0);
+                // Spin up, feed the balls (pausing/kicking on speed dips), then stop - see ShotController.
+                new ShotController(shooter, conveyor).run(SHOOT_SECONDS, this::opModeIsActive);
             }
 
             drive.driveTicks(drive.squares(0.75), -0.75, 0, 0);

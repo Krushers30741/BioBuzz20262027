@@ -36,22 +36,8 @@ public class TeleopDrive extends FTC30741Base {
     // Flowers, etc.) hard. Holding the left bumper scales everything down for precision.
     // Live-tunable from FTC Dashboard or Panels.
     public static double SLOW_MODE_SCALE = 0.4;
-    public static double SHOOTER_SPEED = 677;
-    // The wheels must stay at speed this long (ms) before the conveyor feeds a ball. Gives each
-    // shot a settled, full-speed start instead of firing the instant speed is touched.
-    public static double SETTLE_MS = 150;
-    // When a ball pulls the slower wheel DIP_TRIGGER_PERCENT or more below SHOOTER_SPEED, the
-    // shooter target is raised by KICK_PERCENT until the wheels are back up to SHOOTER_SPEED, then
-    // it drops back to normal. Set KICK_PERCENT to 0 to turn the kick off.
-    public static double KICK_PERCENT = 5;
-    public static double DIP_TRIGGER_PERCENT = 3;
-    // true = after each ball dips the speed, the conveyor STOPS until the wheels are back at
-    // SHOOTER_SPEED and settled for SETTLE_MS, then feeds the next ball. false = conveyor runs
-    // nonstop. Flip it live in Dashboard (TeleopDrive) to compare the two.
-    public static boolean PAUSE_AFTER_EACH_BALL = true;
-    // Safety: if the speed has not recovered this long (ms) after a dip, feed the next ball anyway
-    // so the conveyor can never stay stopped.
-    public static double PAUSE_TIMEOUT_MS = 500;
+    // The shooter numbers (SHOOTER_SPEED, SETTLE_MS, KICK_PERCENT, pause settings) now live in
+    // ShotController, shared with Spot1 and Spot2 - tune them in Dashboard under ShotController.
 
     // FTC teleop periods are 2:00 (120s). These fire a one-time rumble + LED color change as
     // warnings, instead of checking a driver's own watch/count. Live-tunable.
@@ -60,18 +46,7 @@ public class TeleopDrive extends FTC30741Base {
     private static final double TELEOP_DURATION_SECONDS = 120.0;
     private boolean warningGiven = false;
     private boolean finalWarningGiven = false;
-    private boolean shooterRunning = false;      // left bumper pressed, waiting to feed / feeding
-    private boolean conveyorFeeding = false;     // conveyor is running right now (shooter at speed)
-    private final ElapsedTime settleTimer = new ElapsedTime();
-    private boolean wasAtSpeed = false;
-    // Shot log (shown in Panels): how far the speed fell on the last dip and how long it took back.
-    private int dipCount = 0;
-    private double lastDipLowSpeed = 0;
-    private double lastRecoveryMs = 0;
-    private double currentDipLow = 0;
-    private boolean inDip = false;
-    private boolean conveyorPaused = false;      // conveyor stopped, waiting for speed to recover
-    private final ElapsedTime dipTimer = new ElapsedTime();
+    private ShotController shot;                 // shooter spin-up and feeding, shared with the autos
     private boolean reverseWasActive = false;    // right trigger held last loop
     // Loop timing (shown in Panels): how long one pass of the main loop takes.
     private final ElapsedTime loopTimer = new ElapsedTime();
@@ -87,6 +62,7 @@ public class TeleopDrive extends FTC30741Base {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         initOpMode(true, true, true, true, false);
+        shot = new ShotController(shooter, conveyor);
 
         panelsTelemetry.debug("Ready - press START");
         panelsTelemetry.update(telemetry);
@@ -143,8 +119,7 @@ public class TeleopDrive extends FTC30741Base {
             conveyor.setPower(1.0);
             //shooter.setReverseDirection();
             //shooter.setPower(1.0);
-            shooterRunning = false;
-            conveyorFeeding = false;
+            shot.cancel();      // the reverse control owns the conveyor now
         } else if (intake != null && reverseWasActive) {
             // Trigger just released: stop everything it was running, once.
             intake.setPower(0);
@@ -159,88 +134,22 @@ public class TeleopDrive extends FTC30741Base {
             return;
         }
         // Left bumper (one press): start the shooter. The conveyor runs BY ITSELF whenever both
-        // wheels are up to speed - no second press.
+        // wheels are up to speed - no second press. ShotController does the rest every loop.
         if (gamepad1.leftBumperWasPressed()) {
-            shooter.setForwardDirection();
-            shooter.startVelocitySpinUp(SHOOTER_SPEED);
             if (intake != null) {
                 intake.setPower(0);
             }
-            conveyor.setDirectionForward();
-            conveyor.setPower(0.0);
-            shooterRunning = true;
-            conveyorFeeding = false;
-            wasAtSpeed = false;
-            inDip = false;
-            conveyorPaused = false;
-            dipCount = 0;
+            shot.start();
         }
-        // Checked every loop.
-        if (shooterRunning) {
-            boolean atSpeed = shooter.atSpeed();
-            double lowest = Math.min(shooter.getLeftShooterMotorVelocity(),
-                    shooter.getRightShooterMotorVelocity());
-
-            if (atSpeed && !wasAtSpeed) {
-                settleTimer.reset();            // just got to speed - start the settle clock
-            }
-            wasAtSpeed = atSpeed;
-
-            if (!conveyorFeeding) {
-                // Start feeding once at speed and settled. After that the conveyor runs nonstop.
-                if (atSpeed && settleTimer.milliseconds() >= SETTLE_MS) {
-                    conveyorFeeding = true;
-                    conveyor.setPower(1.0);
-                }
-            } else {
-                // A ball pulled the speed down: kick the target up a few percent until the wheels
-                // are back at SHOOTER_SPEED, then go back to the normal target.
-                if (!inDip && lowest < SHOOTER_SPEED * (1 - DIP_TRIGGER_PERCENT / 100.0)) {
-                    inDip = true;
-                    dipCount++;
-                    dipTimer.reset();
-                    currentDipLow = lowest;
-                    if (PAUSE_AFTER_EACH_BALL) {
-                        conveyor.setPower(0);       // hold the next ball until speed is back
-                        conveyorPaused = true;
-                    }
-                    if (KICK_PERCENT > 0) {
-                        shooter.startVelocitySpinUp(SHOOTER_SPEED * (1 + KICK_PERCENT / 100.0));
-                    }
-                }
-                if (inDip) {
-                    currentDipLow = Math.min(currentDipLow, lowest);
-                    if (lowest >= SHOOTER_SPEED) {
-                        inDip = false;
-                        lastDipLowSpeed = currentDipLow;
-                        lastRecoveryMs = dipTimer.milliseconds();
-                        shooter.startVelocitySpinUp(SHOOTER_SPEED);
-                        settleTimer.reset();        // settle clock for the next ball
-                    }
-                }
-                // Resume feeding once recovered and settled, if pause mode was switched off, or
-                // if the speed has not come back within PAUSE_TIMEOUT_MS.
-                boolean recovered = !inDip && atSpeed && settleTimer.milliseconds() >= SETTLE_MS;
-                boolean timedOut = dipTimer.milliseconds() >= PAUSE_TIMEOUT_MS;
-                if (conveyorPaused && (!PAUSE_AFTER_EACH_BALL || recovered || timedOut)) {
-                    conveyor.setPower(1.0);
-                    conveyorPaused = false;
-                }
-            }
-        }
+        shot.update();
     }
 
     public void stopShooting(){
         if (shooter != null && gamepad1.left_trigger_pressed){
-            shooter.setPower(0);
-            conveyor.setPower(0);
+            shot.stop();
             if (intake != null) {
                 intake.setPower(0);
             }
-            shooterRunning = false;
-            conveyorFeeding = false;
-            inDip = false;
-            conveyorPaused = false;
         }
     }
     public void engageDrive(){
@@ -263,12 +172,12 @@ public class TeleopDrive extends FTC30741Base {
             panelsTelemetry.addData("shooter L velocity", shooter.getLeftShooterMotorVelocity());
             panelsTelemetry.addData("shooter R velocity", shooter.getRightShooterMotorVelocity());
             panelsTelemetry.addData("shooter at speed", shooter.atSpeed());
-            panelsTelemetry.addData("conveyor feeding", conveyorFeeding);
-            panelsTelemetry.addData("kick active", inDip);
-            panelsTelemetry.addData("conveyor paused", conveyorPaused);
-            panelsTelemetry.addData("shots (speed dips)", dipCount);
-            panelsTelemetry.addData("last dip lowest speed", lastDipLowSpeed);
-            panelsTelemetry.addData("last recovery (ms)", lastRecoveryMs);
+            panelsTelemetry.addData("conveyor feeding", shot.isFeeding());
+            panelsTelemetry.addData("kick active", shot.isKickActive());
+            panelsTelemetry.addData("conveyor paused", shot.isPaused());
+            panelsTelemetry.addData("shots (speed dips)", shot.getDipCount());
+            panelsTelemetry.addData("last dip lowest speed", shot.getLastDipLowSpeed());
+            panelsTelemetry.addData("last recovery (ms)", shot.getLastRecoveryMs());
             panelsTelemetry.addData("shooter PIDF", shooter.getVelocityPidf());
             panelsTelemetry.addData("battery (V)", drive.getBatteryVoltage());
         }

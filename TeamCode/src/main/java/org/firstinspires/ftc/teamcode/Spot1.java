@@ -1,18 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 //hey, its me, its jsfdnmssfs;andios3hjnr45mnmfdm67ejek
-import static org.firstinspires.ftc.teamcode.TeleopDrive.SHOOTER_SPEED;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
+@Config
 
 @Autonomous(name = "Spot1 - shoot all four Pollen", group = "Autos")
 public class Spot1 extends FTC30741Base {
 
 
-
+// Total seconds for the shot, spin-up included. Tune live in Dashboard under Spot1.
+public static double SHOOT_SECONDS = 7.0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -26,14 +26,8 @@ public class Spot1 extends FTC30741Base {
         double giveUpTime = now() + 30.0;
 
         if (opModeIsActive()) {
-           shooter.setForwardDirection();
-           shooter.startVelocitySpinUp(SHOOTER_SPEED);
-           conveyor.setDirectionForward();
-           while(!shooter.isReady()){}
-           conveyor.setPower(1);
-           wait(6.0);
-           conveyor.setPower(0);
-           shooter.setPower(0);
+           // Spin up, feed the balls (pausing/kicking on speed dips), then stop - see ShotController.
+           new ShotController(shooter, conveyor).run(SHOOT_SECONDS, this::opModeIsActive);
            intake.setPower(0.5);
            drive.driveTicks(drive.squares(2), 0, 0.75, 0);
            drive.driveTicks(drive.squares(4), -0.75, 0, 0);
@@ -49,4 +43,5 @@ public class Spot1 extends FTC30741Base {
 
 
     }
+
 }
