@@ -52,6 +52,7 @@ public class TeleopDrive extends FTC30741Base {
     private final ElapsedTime loopTimer = new ElapsedTime();
     private double loopMs = 0;
     private double maxLoopMs = 0;
+    public Teleop teleop = new Teleop();
 
     private TelemetryManager panelsTelemetry;
 
@@ -73,130 +74,7 @@ public class TeleopDrive extends FTC30741Base {
             loopMs = loopTimer.milliseconds();   // time since the start of the previous pass
             loopTimer.reset();
             maxLoopMs = Math.max(maxLoopMs, loopMs);
-            engageDrive();
-            runIntake();
-            reverseIntake();
-            shootArtifacts();
-            stopShooting();
-            showTelemetry();
-            checkEndgameWarnings();
+            teleop.teleopModeActive();
         }
-    }
-
-    /**
-     * Warns the driver with a controller rumble + light bar color as the 2:00 teleop clock
-     * runs low, so they don't have to watch a stopwatch to know when endgame starts.
-     */
-    private void checkEndgameWarnings() {
-        double secondsLeft = TELEOP_DURATION_SECONDS - now();
-
-        if (!warningGiven && secondsLeft <= WARNING_SECONDS_LEFT) {
-            warningGiven = true;
-            gamepad1.rumbleBlips(2);
-            gamepad1.setLedColor(1, 1, 0, Gamepad.LED_DURATION_CONTINUOUS); // yellow
-        }
-
-        if (!finalWarningGiven && secondsLeft <= FINAL_WARNING_SECONDS_LEFT) {
-            finalWarningGiven = true;
-            gamepad1.rumble(1.0, 1.0, 800);
-            gamepad1.setLedColor(1, 0, 0, Gamepad.LED_DURATION_CONTINUOUS); // red
-        }
-    }
-    public void runIntake(){
-        if (intake != null && gamepad1.right_bumper) {
-            intake.setDirectionForward();
-            intake.setPower(0.75);
-            conveyor.setDirectionForward();
-            conveyor.setPower(1.0);
-        }
-    }
-    public void reverseIntake(){
-        boolean active = gamepad1.right_trigger > 0;
-        if (intake != null && active) {
-            intake.setDirectionReverse();
-            intake.setPower(0.75);
-            conveyor.setDirectionReverse();
-            conveyor.setPower(1.0);
-            //shooter.setReverseDirection();
-            //shooter.setPower(1.0);
-            shot.cancel();      // the reverse control owns the conveyor now
-        } else if (intake != null && reverseWasActive) {
-            // Trigger just released: stop everything it was running, once.
-            intake.setPower(0);
-            conveyor.setPower(0);
-            shooter.setPower(0);
-        }
-        reverseWasActive = active;
-    }
-
-    public void shootArtifacts(){
-        if (shooter == null) {
-            return;
-        }
-        // Left bumper (one press): start the shooter. The conveyor runs BY ITSELF whenever both
-        // wheels are up to speed - no second press. ShotController does the rest every loop.
-        if (gamepad1.leftBumperWasPressed()) {
-            if (intake != null) {
-                intake.setPower(0);
-            }
-            shot.start();
-        }
-        shot.update();
-    }
-
-    public void stopShooting(){
-        if (shooter != null && gamepad1.left_trigger_pressed){
-            shot.stop();
-            if (intake != null) {
-                intake.setPower(0);
-            }
-        }
-    }
-    public void engageDrive(){
-        if (gamepad1.options) {
-            drive.resetHeading();
-        }
-
-        double slowModeScale = gamepad1.left_bumper ? SLOW_MODE_SCALE : 1.0;
-        double forward = gamepad1.left_stick_y * slowModeScale;
-        double strafe = gamepad1.left_stick_x * slowModeScale;
-        double turn = gamepad1.right_stick_x * slowModeScale;
-        drive.driveRobotCentricHeadingHold(forward, strafe, turn);
-    }
-
-    public void showTelemetry(){
-        panelsTelemetry.addData("heading (deg)", drive.getHeadingDegrees());
-        panelsTelemetry.addData("slow mode", gamepad1.left_bumper ? "ON" : "off");
-        if (shooter != null) {
-            panelsTelemetry.addData("shooter target", shooter.getTargetVelocity());
-            panelsTelemetry.addData("shooter L velocity", shooter.getLeftShooterMotorVelocity());
-            panelsTelemetry.addData("shooter R velocity", shooter.getRightShooterMotorVelocity());
-            panelsTelemetry.addData("shooter at speed", shooter.atSpeed());
-            panelsTelemetry.addData("conveyor feeding", shot.isFeeding());
-            panelsTelemetry.addData("kick active", shot.isKickActive());
-            panelsTelemetry.addData("conveyor paused", shot.isPaused());
-            panelsTelemetry.addData("shots (speed dips)", shot.getDipCount());
-            panelsTelemetry.addData("last dip lowest speed", shot.getLastDipLowSpeed());
-            panelsTelemetry.addData("last recovery (ms)", shot.getLastRecoveryMs());
-            panelsTelemetry.addData("shooter PIDF", shooter.getVelocityPidf());
-            panelsTelemetry.addData("battery (V)", drive.getBatteryVoltage());
-        }
-        panelsTelemetry.addData("loop time (ms)", loopMs);
-        panelsTelemetry.addData("max loop time (ms)", maxLoopMs);
-        panelsTelemetry.addData("time left (s)", TELEOP_DURATION_SECONDS - now());
-        panelsTelemetry.addData("raw left_stick_x", gamepad1.left_stick_x);
-        panelsTelemetry.addData("raw left_stick_y", gamepad1.left_stick_y);
-        panelsTelemetry.addData("raw right_stick_x", gamepad1.right_stick_x);
-        double[] wheelVolocities = drive.getWheelVelocities();
-        double[] wheelCurrents = drive.getWheelCurrents();
-        panelsTelemetry.addData("lf speed (ticks/secs)", wheelVolocities[0]);
-        panelsTelemetry.addData("rf speed (ticks/secs)", wheelVolocities[1]);
-        panelsTelemetry.addData("lb speed (ticks/secs)", wheelVolocities[2]);
-        panelsTelemetry.addData("rb speed (ticks/secs)", wheelVolocities[3]);
-        panelsTelemetry.addData("lf current (a)", wheelCurrents[0]);
-        panelsTelemetry.addData("rf current (a)", wheelCurrents[1]);
-        panelsTelemetry.addData("lb current (a)", wheelCurrents[2]);
-        panelsTelemetry.addData("rb current (a)", wheelCurrents[3]);
-        panelsTelemetry.update(telemetry);
     }
 }

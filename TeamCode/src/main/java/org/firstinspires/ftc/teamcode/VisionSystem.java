@@ -18,6 +18,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -178,6 +179,29 @@ public class VisionSystem {
         return true;
     }
 
+    public boolean hasSpotTwoTags(){
+        if(findTag(38)!=null){
+            return true;
+        } else if (findTag(39)!=null) {
+            return true;
+        }else if (findTag(40)!=null) {
+            return true;
+        }else if (findTag(41)!=null) {
+            return true;
+        }else if (findTag(30)!=null) {
+            return true;
+        }else if (findTag(31)!=null) {
+            return true;
+        }else if (findTag(32)!=null) {
+            return true;
+        }else if (findTag(33)!=null) {
+            return true;
+        }else {
+            return false;
+        }
+
+
+        }
     /** Every AprilTag the camera can currently see that it also recognizes (has size info for). */
     public List<AprilTagDetection> getDetections() {
         return aprilTag.getDetections();
@@ -255,5 +279,29 @@ public class VisionSystem {
         CameraStreamServer.getInstance().setSource(null);
         FtcDashboard.getInstance().stopCameraStream();
         visionPortal.close();
+    }
+    public List<Integer> redTags(){
+        List<Integer>red=new ArrayList<>();
+        red.add(34);
+        red.add(35);
+        red.add(36);
+        red.add(37);
+        red.add(42);
+        red.add(43);
+        red.add(44);
+        red.add(45);
+return red;
+    }
+    public List<Integer> blueTags(){
+        List<Integer>blue=new ArrayList<>();
+        blue.add(38);
+        blue.add(39);
+        blue.add(40);
+        blue.add(41);
+        blue.add(30);
+        blue.add(31);
+        blue.add(32);
+        blue.add(33);
+        return blue;
     }
 }

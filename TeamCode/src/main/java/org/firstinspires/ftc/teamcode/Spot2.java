@@ -22,7 +22,6 @@ public static double SHOOT_SECONDS = 12.0;
         telemetry.addLine("");
         telemetry.update();
         waitForStart();
-
         double giveUpTime = now() + 30.0;
 
         if (opModeIsActive() && now() < giveUpTime) {

@@ -33,110 +33,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 @Config
 @TeleOp(name = "TeleopDriveBlue", group = "BIOBUZZ")
 public class TeleopDriveBlue extends FTC30741Base {
-
-    // Driving at full power all the time makes fine positioning (lining up on the Hive,
-    // Flowers, etc.) hard. Holding the left bumper scales everything down for precision.
-    // Live-tunable from FTC Dashboard or Panels.
-    public static double SLOW_MODE_SCALE = 0.4;
-    public static double SHOOTER_SPEED = 750;
-    public static double STRAFE_GAIN = 1.3;
-
-    // FTC teleop periods are 2:00 (120s). These fire a one-time rumble + LED color change as
-    // warnings, instead of checking a driver's own watch/count. Live-tunable.
-    public static double WARNING_SECONDS_LEFT = 20.0;
-    public static double FINAL_WARNING_SECONDS_LEFT = 5.0;
-    private static final double TELEOP_DURATION_SECONDS = 120.0;
-    private boolean warningGiven = false;
-    private boolean finalWarningGiven = false;
-
-    private TelemetryManager panelsTelemetry;
+    public Teleop teleop = new Teleop();
 
     @Override
     public void runOpMode() throws InterruptedException {
-        // Mirror telemetry to Panels, FTC Dashboard, and the Driver Station all at once.
-        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
-        initOpMode(true, true, true, true, false);
-
-        panelsTelemetry.debug("Ready - press START");
-        panelsTelemetry.update(telemetry);
-        waitForStart();
-
         while (opModeIsActive()) {
-            if (gamepad1.options) {
-                drive.resetHeading();
-            }
-
-            double slowModeScale = gamepad1.left_bumper ? SLOW_MODE_SCALE : 1.0;
-            double forward = gamepad1.left_stick_y * slowModeScale;
-            double strafe = gamepad1.left_stick_x * slowModeScale;
-            double turn = gamepad1.right_stick_x * slowModeScale;
-            // drive.driveFieldCentric(forward, strafe, turn);
-            drive.driveRobotCentricHeadingHold(forward, strafe, turn);
-            if (intake != null)  {
-                intake.setPower(gamepad1.right_bumper ? 0.75:0.0);
-                conveyor.setDirectionForward();
-                conveyor.setPower(gamepad1.right_bumper ?1:0.0);
-            }
-            if (shooter != null && gamepad1.leftBumperWasPressed()) {
-                shooter.setForwardDirection();
-                shooter.startVelocitySpinUp(SHOOTER_SPEED);
-                conveyor.setDirectionForward();
-                if(shooter.isReady()){
-                    conveyor.setPower(1.0);
-                }else{
-                    conveyor.setPower(0.0);
-                }
-            }
-            if (shooter != null && gamepad1.left_trigger_pressed){
-                shooter.setPower(0);
-                conveyor.setPower(0);
-            }
-            /** if (conveyor!= null) {
-             *  conveyor.setDirectionReverse();
-             * conveyor.setPower(gamepad1.a ? 1.0 : 0.0);
-             *}
-             */
-            checkEndgameWarnings();
-
-            panelsTelemetry.addData("heading (deg)", drive.getHeadingDegrees());
-            panelsTelemetry.addData("slow mode", slowModeScale < 1.0 ? "ON" : "off");
-            panelsTelemetry.addData("time left (s)", TELEOP_DURATION_SECONDS - now());
-            panelsTelemetry.addData("raw left_stick_x", gamepad1.left_stick_x);
-            panelsTelemetry.addData("raw left_stick_y", gamepad1.left_stick_y);
-            panelsTelemetry.addData("raw right_stick_x", gamepad1.right_stick_x);
-            double[] wheelVolocities = drive.getWheelVelocities();
-            double[] wheelCurrents = drive.getWheelCurrents();
-            panelsTelemetry.addData("lf speed (ticks/secs)", wheelVolocities[0]);
-            panelsTelemetry.addData("rf speed (ticks/secs)", wheelVolocities[1]);
-            panelsTelemetry.addData("lb speed (ticks/secs)", wheelVolocities[2]);
-            panelsTelemetry.addData("rb speed (ticks/secs)", wheelVolocities[3]);
-            panelsTelemetry.addData("lf current (a)", wheelCurrents[0]);
-            panelsTelemetry.addData("rf current (a)", wheelCurrents[1]);
-            panelsTelemetry.addData("lb current (a)", wheelCurrents[2]);
-            panelsTelemetry.addData("rb current (a)", wheelCurrents[3]);
-            panelsTelemetry.update(telemetry);
-        }
-    }
-
-    /**
-     * Warns the driver with a controller rumble + light bar color as the 2:00 teleop clock
-     * runs low, so they don't have to watch a stopwatch to know when endgame starts.
-     */
-    private void checkEndgameWarnings() {
-        double secondsLeft = TELEOP_DURATION_SECONDS - now();
-
-        if (!warningGiven && secondsLeft <= WARNING_SECONDS_LEFT) {
-            warningGiven = true;
-            gamepad1.rumbleBlips(2);
-            gamepad1.setLedColor(1, 1, 0, Gamepad.LED_DURATION_CONTINUOUS); // yellow
-        }
-
-        if (!finalWarningGiven && secondsLeft <= FINAL_WARNING_SECONDS_LEFT) {
-            finalWarningGiven = true;
-            gamepad1.rumble(1.0, 1.0, 800);
-            gamepad1.setLedColor(1, 0, 0, Gamepad.LED_DURATION_CONTINUOUS); // red
+            teleop.teleopModeActive();
         }
     }
 }
