@@ -35,7 +35,7 @@ public class ShotController {
     public static double SETTLE_MS = 150;
     // Raise the target by KICK_PERCENT when a ball drags the speed down by DIP_TRIGGER_PERCENT.
     // Set KICK_PERCENT to 0 to turn the kick off.
-    public static double KICK_PERCENT = 5;
+    public static double KICK_PERCENT = 40;
     public static double DIP_TRIGGER_PERCENT = 3;
     // true = conveyor STOPS after each ball until the speed is back and settled. false = nonstop.
     public static boolean PAUSE_AFTER_EACH_BALL = true;
