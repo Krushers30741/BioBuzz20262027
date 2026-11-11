@@ -30,7 +30,7 @@ import java.util.function.BooleanSupplier;
 public class ShotController {
 
     // Target wheel speed in ticks/second.
-    public static double SHOOTER_SPEED = 745;
+    public static double SHOOTER_SPEED = 725;
     // The wheels must stay at speed this long (ms) before the conveyor feeds a ball.
     public static double SETTLE_MS = 150;
     // Raise the target by KICK_PERCENT when a ball drags the speed down by DIP_TRIGGER_PERCENT.
