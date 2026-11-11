@@ -1,12 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-
-import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,6 +17,14 @@ public class Teleop  extends FTC30741Base {
     private static final double TELEOP_DURATION_SECONDS = 120.0;
     private boolean warningGiven = false;
     private boolean finalWarningGiven = false;
+
+    // Create local gamepad fields inside Teleop
+    private Gamepad gamepad1;
+
+    // Call this once before your loop starts
+    public void initGamepads(Gamepad g1) {
+        this.gamepad1 = g1;
+    }
     public void teleopModeActive(){
         loopMs = loopTimer.milliseconds();   // time since the start of the previous pass
         loopTimer.reset();

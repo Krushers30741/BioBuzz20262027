@@ -68,12 +68,12 @@ public class TeleopDrive extends FTC30741Base {
         panelsTelemetry.debug("Ready - press START");
         panelsTelemetry.update(telemetry);
         waitForStart();
-
+        teleop.initGamepads(gamepad1);
         loopTimer.reset();
-        while (opModeIsActive()) {
+        while (opModeIsActive()) {/*
             loopMs = loopTimer.milliseconds();   // time since the start of the previous pass
             loopTimer.reset();
-            maxLoopMs = Math.max(maxLoopMs, loopMs);
+            maxLoopMs = Math.max(maxLoopMs, loopMs);*/
             teleop.teleopModeActive();
         }
     }
