@@ -51,7 +51,7 @@ public class MecanumDriveV2 {
 
     private final HardwareMap hardwareMap;
     private Telemetry telemetry;
-    private final DcMotorEx leftFront, leftBack, rightBack, rightFront;
+    private final DcMotorEx leftFront, leftBack, rightFront;
     private final IMU imu;
 
     public MecanumDriveV2(HardwareMap hw, Telemetry telemetry) {
@@ -61,15 +61,15 @@ public class MecanumDriveV2 {
         //   has motors with these exact names, or change the names below to match.
         leftFront = hw.get(DcMotorEx.class, "leftFront"); //Expansion Hub 1
         leftBack = hw.get(DcMotorEx.class, "leftBack"); //Expansion Hub 3
-        rightBack = hw.get(DcMotorEx.class, "rightBack");//Control Hub 0
+       // rightBack = hw.get(DcMotorEx.class, "rightBack");//Control Hub 0
         rightFront = hw.get(DcMotorEx.class, "rightFront");//Control Hub 1
 
-        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        // rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        for (DcMotorEx motor : new DcMotorEx[]{leftFront, leftBack, rightBack, rightFront}) {
+        for (DcMotorEx motor : new DcMotorEx[]{leftFront, leftBack, rightFront}) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
@@ -113,7 +113,7 @@ public class MecanumDriveV2 {
         leftFront.setPower(frontLeftPower / max);
         rightFront.setPower(frontRightPower / max);
         leftBack.setPower(backLeftPower / max);
-        rightBack.setPower(backRightPower / max);
+        // rightBack.setPower(backRightPower / max);
     }
 
     /**
@@ -187,7 +187,7 @@ public class MecanumDriveV2 {
         rightFront.setPower(frontRightPower / max);
         leftBack.setPower(backLeftPower / max);
         double trim = 1.0 + (RIGHT_BACK_STRAFE_TRIM - 1.0) * Math.min(1.0, Math.abs(strafe));
-        rightBack.setPower(Math.max(-1.0, Math.min(1.0, backRightPower / max * trim)));
+        // rightBack.setPower(Math.max(-1.0, Math.min(1.0, backRightPower / max * trim)));
     }
 
     /**
@@ -211,7 +211,7 @@ public class MecanumDriveV2 {
                 leftFront.getVelocity(),
                 rightFront.getVelocity(),
                 leftBack.getVelocity(),
-                rightBack.getVelocity()
+               // rightBack.getVelocity()
         };
     }
 
@@ -220,7 +220,7 @@ public class MecanumDriveV2 {
                 leftFront.getCurrentPosition(),
                 rightFront.getCurrentPosition(),
                 leftBack.getCurrentPosition(),
-                rightBack.getCurrentPosition()
+               // rightBack.getCurrentPosition()
         };
     }
 
@@ -229,7 +229,7 @@ public class MecanumDriveV2 {
                 leftFront.getCurrent(CurrentUnit.AMPS),
                 rightFront.getCurrent(CurrentUnit.AMPS),
                 leftBack.getCurrent(CurrentUnit.AMPS),
-                rightBack.getCurrent(CurrentUnit.AMPS)
+               // rightBack.getCurrent(CurrentUnit.AMPS)
         };
     }
 
