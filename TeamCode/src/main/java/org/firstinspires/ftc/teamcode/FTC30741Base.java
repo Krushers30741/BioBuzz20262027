@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public abstract class FTC30741Base extends LinearOpMode implements Clock {
 
     protected MecanumDrive drive;
+    protected MecanumDriveV2 drive2;
     protected Intake intake;
     protected Shooter shooter;
     protected VisionSystem vision;
@@ -25,9 +26,13 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
      * @param useShooter whether to build the shooter (see {@link Shooter})
      * @param useShooter whether to build the shooter (see {@link Conveyor})
      */
-    public void initOpMode(boolean useDrive, boolean useIntake, boolean useShooter,boolean useConveyor, boolean useColorSensor) {
+    public void initOpMode(boolean useDrive, boolean useDrive2, boolean useIntake, boolean useShooter,boolean useConveyor, boolean useColorSensor) {
         if (useDrive) {
             drive = new MecanumDrive(hardwareMap, telemetry);
+        }
+
+        if (useDrive2) {
+            drive2 = new MecanumDriveV2(hardwareMap, telemetry);
         }
 
         if (useIntake) {

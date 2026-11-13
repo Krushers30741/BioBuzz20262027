@@ -24,7 +24,7 @@ public class UtilityShooterMaxSpeed extends FTC30741Base {
         TelemetryManager panels = PanelsTelemetry.INSTANCE.getTelemetry();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        initOpMode(false, false, true, false, false);
+        initOpMode(false, false,false, true, false, false);
         panels.debug("Hold A = shooter full power, B = stop and reset max");
         panels.update(telemetry);
         waitForStart();

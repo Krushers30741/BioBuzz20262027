@@ -59,7 +59,7 @@ public class TeleopDrive2 extends FTC30741Base {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        initOpMode(true, true, true, true, false);
+        initOpMode(true, false, true, true, true, false);
 
         panelsTelemetry.debug("Ready - press START");
         panelsTelemetry.update(telemetry);

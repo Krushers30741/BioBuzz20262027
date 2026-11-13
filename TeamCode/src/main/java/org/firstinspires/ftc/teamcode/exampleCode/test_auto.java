@@ -13,7 +13,7 @@ public class test_auto extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, true, true, true,false);
+        initOpMode(true, false, true, true, true, false);
         initVision();
 
         telemetry.addLine("");

@@ -11,7 +11,7 @@ public class testColorSensor extends FTC30741Base {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(false, false, false, false, true);
+        initOpMode(false, false, false, false, false, true);
 
 
         telemetry.addLine("5");

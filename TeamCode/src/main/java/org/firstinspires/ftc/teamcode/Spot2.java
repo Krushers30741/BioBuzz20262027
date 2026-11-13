@@ -15,7 +15,7 @@ public static double SHOOT_SECONDS = 12.0;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, true, true, true, false);
+        initOpMode(true, false, true, true, true, false);
         initVision();
         vision.setManualExposure(EXPOSURE, GAIN);   // exposure ms, gain - robot is still when it reads the tag
 

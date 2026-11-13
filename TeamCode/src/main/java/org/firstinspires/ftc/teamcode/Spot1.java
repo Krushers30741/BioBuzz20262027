@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode;
-//hey, its me, its jsfdnmssfs;andios3hjnr45mnmfdm67ejek
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
 
@@ -16,7 +14,7 @@ public static double SHOOT_SECONDS = 7.0;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, true, true, true,false);
+        initOpMode(true, false, true, true, true, false);
         initVision();
 
         telemetry.addLine("");
