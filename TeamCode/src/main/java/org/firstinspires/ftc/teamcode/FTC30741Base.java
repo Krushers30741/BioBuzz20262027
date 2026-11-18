@@ -14,6 +14,7 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
 
     protected MecanumDrive drive;
     protected MecanumDriveV2 drive2;
+    protected PinpointOdometryOpMode odo;
     protected Intake intake;
     protected Shooter shooter;
     protected VisionSystem vision;
@@ -30,6 +31,7 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
         if (useDrive) {
             drive = new MecanumDrive(hardwareMap, telemetry);
         }
+
 
         if (useDrive2) {
             drive2 = new MecanumDriveV2(hardwareMap, telemetry);

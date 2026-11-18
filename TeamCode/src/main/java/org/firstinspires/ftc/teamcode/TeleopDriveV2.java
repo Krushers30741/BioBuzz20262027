@@ -10,6 +10,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 /**
  * BIOBUZZ TeleOp — robot-centric mecanum drive with heading hold, intake and shooter.
  *
@@ -123,6 +127,21 @@ public class TeleopDriveV2 extends FTC30741Base {
             shooter.setPower(0);
         }
         reverseWasActive = active;
+    }
+
+    public void Odometry() {
+        odo.update();
+
+        Pose2D pos = odo.getPosition();
+        double xInches = pos.getX(DistanceUnit.INCH);
+        double yInches = pos.getY(DistanceUnit.INCH);
+        double headingDeg = pos.getHeading(AngleUnit.DEGREES);
+
+        telemetry.addData("Status", odo.getDeviceStatus());
+        telemetry.addData("X (in)", "%.2f", xInches);
+        telemetry.addData("Y (in)", "%.2f", yInches);
+        telemetry.addData("Heading (deg)", "%.2f", headingDeg);
+        telemetry.update();
     }
 
     public void shootBalls() {
