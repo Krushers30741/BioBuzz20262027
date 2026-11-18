@@ -68,7 +68,7 @@ public class TeleopDriveV2 extends FTC30741Base {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         initOpMode(false, true, false, false, false, false);
-        shot = new ShotController(shooter, conveyor);
+        shot = new ShotController(shooter, conveyor,vision);
 
         panelsTelemetry.debug("Ready - press START");
         panelsTelemetry.update(telemetry);

@@ -27,6 +27,7 @@ public class Shooter {
     private final DcMotorEx rightShooterMotor;
     private final DcMotorEx leftShooterMotor;
 
+
     // Asynchronous tracking variables
     // "At speed" means BOTH wheels reach this fraction of the target. A motor in velocity mode
     // hovers around its target and often sits just under it, so 100% can never be met.
@@ -47,6 +48,7 @@ public class Shooter {
 
     // Call this ONCE to initiate the spin-up sequence
     public void startVelocitySpinUp(double velocity) {
+
         this.targetVelocity = velocity;
         if (VELOCITY_F > 0) {
             PIDFCoefficients pidf = new PIDFCoefficients(VELOCITY_P, VELOCITY_I, VELOCITY_D, VELOCITY_F);

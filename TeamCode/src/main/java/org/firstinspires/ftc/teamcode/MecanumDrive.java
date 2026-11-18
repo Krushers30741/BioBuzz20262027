@@ -252,7 +252,7 @@ public class MecanumDrive {
     }
 
     /**
-     * Drives until every wheel has travelled at least {@code ticks} (in either direction), or
+     * Drives until every wheel has traveled at least {@code ticks} (in either direction), or
      * until isActive turns false (pass {@code this::opModeIsActive} from your OpMode).
      */
     public void driveTicks(double ticks, double forward, double strafe, double turn, BooleanSupplier isActive) {

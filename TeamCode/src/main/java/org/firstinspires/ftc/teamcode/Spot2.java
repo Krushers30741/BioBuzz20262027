@@ -31,7 +31,7 @@ public static double SHOOT_SECONDS = 12.0;
             if (vision.hasSpot2()) {
                 shooter.setFloat();
                 // Spin up, feed the balls (pausing/kicking on speed dips), then stop - see ShotController.
-                new ShotController(shooter, conveyor).run(SHOOT_SECONDS, this::opModeIsActive);
+                new ShotController(shooter, conveyor, vision).run(SHOOT_SECONDS, this::opModeIsActive);
             }
 
             drive.driveTicks(drive.squares(0.75), -0.75, 0, 0);

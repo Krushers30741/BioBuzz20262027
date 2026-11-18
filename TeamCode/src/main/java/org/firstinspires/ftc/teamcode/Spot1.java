@@ -25,7 +25,7 @@ public static double SHOOT_SECONDS = 7.0;
 
         if (opModeIsActive()) {
            // Spin up, feed the balls (pausing/kicking on speed dips), then stop - see ShotController.
-           new ShotController(shooter, conveyor).run(SHOOT_SECONDS, this::opModeIsActive);
+           new ShotController(shooter, conveyor, vision).run(SHOOT_SECONDS, this::opModeIsActive);
            intake.setPower(0.5);
            drive.driveTicks(drive.squares(2), 0, 0.75, 0);
            drive.driveTicks(drive.squares(4), -0.75, 0, 0);

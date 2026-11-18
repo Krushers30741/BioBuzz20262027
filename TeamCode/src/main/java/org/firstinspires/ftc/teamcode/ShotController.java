@@ -47,6 +47,7 @@ public class ShotController {
 
     private final Shooter shooter;
     private final Conveyor conveyor;
+    private final VisionSystem vision;
 
     private boolean running = false;       // start() called, not stopped yet
     private boolean feeding = false;       // conveyor has been started for this shot
@@ -61,9 +62,10 @@ public class ShotController {
     private final ElapsedTime dipTimer = new ElapsedTime();
     private final ElapsedTime spinUpTimer = new ElapsedTime();
 
-    public ShotController(Shooter shooter, Conveyor conveyor) {
+    public ShotController(Shooter shooter, Conveyor conveyor, VisionSystem vision) {
         this.shooter = shooter;
         this.conveyor = conveyor;
+        this.vision = vision;
     }
 
     /** Begin spinning up. The conveyor stays off until the wheels are at speed. */

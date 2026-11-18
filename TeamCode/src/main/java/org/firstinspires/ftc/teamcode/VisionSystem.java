@@ -304,4 +304,27 @@ return red;
         blue.add(33);
         return blue;
     }
+    public double mathDistance(String color,double maxDistance, double maxSpeed){
+       double distancePercent = (getCurrentDistance(color)*100)/maxDistance;
+       double speedPercent = 2 * (100 - distancePercent);
+       return (getCurrentDistance(color)*100)/maxDistance;
+    }
+    public double getCurrentDistance(String color){
+        List<Integer> tagColor;
+        if(color.equals("red")){
+            tagColor=redTags();
+        } else {
+            tagColor=blueTags();
+        }
+        for ( int tag:tagColor) {
+            AprilTagSingleDetection single = findTag(tag);
+            if (single!=null){
+                double x = single.ftcPose.x; // Left/Right offset in inches
+                double y = single.ftcPose.y; // Forward depth in inches
+                return Math.hypot(x, y);
+           }
+        }
+        return 0;
+    }
 }
+
