@@ -15,7 +15,7 @@ public static double SHOOT_SECONDS = 12.0;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initOpMode(true, false, true, true, true, false);
+        initOpMode(false, true, false, false, false, false);
         initVision();
         vision.setManualExposure(EXPOSURE, GAIN);   // exposure ms, gain - robot is still when it reads the tag
 
@@ -29,20 +29,26 @@ public static double SHOOT_SECONDS = 12.0;
                 telemetry.addLine("Tag Not Found");
             }
             if (vision.hasSpot2()) {
-                shooter.setFloat();
+                if(shooter!=null) {
+                    shooter.setFloat();
+
+                }
+
                 // Spin up, feed the balls (pausing/kicking on speed dips), then stop - see ShotController.
-                new ShotController(shooter, conveyor, vision).run(SHOOT_SECONDS, this::opModeIsActive);
+                if(shooter!=null) {
+                    new ShotController(shooter, conveyor, vision).run(SHOOT_SECONDS, this::opModeIsActive);
+                }
             }
 
-            drive.driveTicks(drive.squares(0.75), -0.75, 0, 0);
-            drive.driveTicks(drive.squares(3), 0,-0.75 , 0);
-            drive.driveRobotCentric(0, 0, 0);
+            drive2.driveTicks(drive2.squares(0.75), -0.75, 0, 0);
+            drive2.driveTicks(drive2.squares(3), 0,-0.75 , 0);
+            drive2.driveRobotCentric(0, 0, 0);
 
             telemetry.update();
         }
 
 
-        drive.driveRobotCentric(0, 0, 0);
+        drive2.driveRobotCentric(0, 0, 0);
 
         telemetry.addLine("Spot 2 complete!");
         telemetry.update();
