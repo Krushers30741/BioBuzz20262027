@@ -41,6 +41,9 @@ public class TeleopDriveV2 extends FTC30741Base {
     // Live-tunable from FTC Dashboard or Panels.
    public static double MaxDriveSpeed = 0.85;
     public static double SLOW_MODE_SCALE = 0.4;
+    // Stick values smaller than this count as 0, so a worn stick that rests a little off
+    // center doesn't make the robot creep.
+    public static double STICK_DEADBAND = 0.05;
     // The shooter numbers (SHOOTER_SPEED, SETTLE_MS, KICK_PERCENT, pause settings) now live in
     // ShotController, shared with Spot1 and Spot2 - tune them in Dashboard under ShotController.
 
@@ -94,12 +97,17 @@ public class TeleopDriveV2 extends FTC30741Base {
         }
 
         double slowModeScale = gamepad1.left_bumper ? SLOW_MODE_SCALE : 1.0;
-        double forward = gamepad1.left_stick_y * MaxDriveSpeed * slowModeScale;
-        double strafe = gamepad1.left_stick_x * MaxDriveSpeed * slowModeScale;
-        double turn = gamepad1.right_stick_x * MaxDriveSpeed * slowModeScale;
+        double forward = deadband(gamepad1.left_stick_y) * MaxDriveSpeed * slowModeScale;
+        double strafe = deadband(gamepad1.left_stick_x) * MaxDriveSpeed * slowModeScale;
+        double turn = deadband(gamepad1.right_stick_x) * MaxDriveSpeed * slowModeScale;
         drive2.driveRobotCentricHeadingHold(forward, strafe, turn);
     }
 
+
+    /** Returns 0 for tiny stick values (see STICK_DEADBAND), otherwise the value unchanged. */
+    private double deadband(double stick) {
+        return Math.abs(stick) < STICK_DEADBAND ? 0 : stick;
+    }
 
     public void runIntake() {
         if (intake != null && gamepad1.right_bumper) {
@@ -130,6 +138,9 @@ public class TeleopDriveV2 extends FTC30741Base {
     }
 
     public void Odometry() {
+        if (odo == null) {
+            return;   // call initOdometry() in runOpMode() first
+        }
         odo.update();
 
         Pose2D pos = odo.getPosition();

@@ -28,6 +28,7 @@ public class MecanumDriveV2 {
     // Back-right wheel runs slow while strafing, which turns the robot a bit. This boosts that
     // wheel's power in proportion to how hard you strafe. 1.0 = no change. Try 1.05, 1.1, ...
     // Tune live in FTC Dashboard (Configuration -> MecanumDrive), no redeploy needed.
+    // Re-check this now that rightBack brakes like the other wheels: it may not be needed anymore.
     public static double RIGHT_BACK_STRAFE_TRIM = 1.0;
 
     // ---- Heading hold (keeps the robot pointed the same way while driving straight/strafing) ----
@@ -69,7 +70,9 @@ public class MecanumDriveV2 {
          rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        for (DcMotorEx motor : new DcMotorEx[]{leftFront, leftBack, rightFront}) {
+        // All FOUR wheels brake when the stick is let go. (rightBack used to be missing here, so it
+        // coasted while the others braked.)
+        for (DcMotorEx motor : new DcMotorEx[]{leftFront, leftBack, rightFront, rightBack}) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
@@ -96,13 +99,16 @@ public class MecanumDriveV2 {
         double heading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         // Rotate the stick vector by -heading so "forward" means "away from the driver"
         // instead of "whichever way the robot's front currently points."
-        double rotatedForward = forward * Math.cos(-heading) - strafe * Math.sin(-heading);
-        double rotatedStrafe = forward * Math.sin(-heading) + strafe * Math.cos(-heading);
+        // (strafe = x to the right, forward = y away from the driver, heading counter-clockwise.)
+        // Check: robot turned 90 deg left + stick forward = the robot strafes RIGHT.
+        double rotatedStrafe = strafe * Math.cos(-heading) - forward * Math.sin(-heading);
+        double rotatedForward = strafe * Math.sin(-heading) + forward * Math.cos(-heading);
 
+        // Same wheel mix as driveRobotCentric.
         double frontLeftPower = rotatedForward + rotatedStrafe + turn;
-        double frontRightPower = rotatedForward + rotatedStrafe - turn;
+        double frontRightPower = rotatedForward - rotatedStrafe - turn;
         double backLeftPower = rotatedForward - rotatedStrafe + turn;
-        double backRightPower = rotatedForward - rotatedStrafe - turn;
+        double backRightPower = rotatedForward + rotatedStrafe - turn;
 
         // Scale all four down together (never up) so pushing two sticks at once can't push
         // any wheel's requested power over 1.0 and distort the direction the robot travels.

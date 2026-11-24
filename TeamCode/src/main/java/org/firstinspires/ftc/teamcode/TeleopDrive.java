@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -28,8 +29,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * right trigger  - hold: reverse intake, conveyor and shooter (clear a jam)
  * options        - reset the heading
  */
+// OLD TeleOp for the old drive (MecanumDrive, all four motors FORWARD). It had the same name as
+// TeleopDriveV2, so the Driver Station could show the wrong one. @Disabled hides it from the
+// list. Use TeleopDriveV2 (shows as "TeleopDrive") for the mecanum wheels.
+@Disabled
 @Config
-@TeleOp(name = "TeleopDrive", group = "BIOBUZZ")
+@TeleOp(name = "TeleopDrive (old)", group = "BIOBUZZ")
 public class TeleopDrive extends FTC30741Base {
 
     // Driving at full power all the time makes fine positioning (lining up on the Hive,

@@ -25,8 +25,10 @@ public static double SHOOT_SECONDS = 12.0;
         double giveUpTime = now() + 30.0;
 
         if (opModeIsActive() && now() < giveUpTime) {
-            while (!vision.hasSpot2() && now() < giveUpTime - 15) {
+            // Wait up to 15 seconds for a tag, but quit right away if Stop is pressed.
+            while (opModeIsActive() && !vision.hasSpot2() && now() < giveUpTime - 15) {
                 telemetry.addLine("Tag Not Found");
+                telemetry.update();
             }
             if (vision.hasSpot2()) {
                 if(shooter!=null) {
@@ -40,8 +42,8 @@ public static double SHOOT_SECONDS = 12.0;
                 }
             }
 
-            drive2.driveTicks(drive2.squares(0.75), -0.75, 0, 0);
-            drive2.driveTicks(drive2.squares(3), 0,-0.75 , 0);
+            drive2.driveTicks(drive2.squares(0.75), -0.75, 0, 0, this::opModeIsActive);
+            drive2.driveTicks(drive2.squares(3), 0, -0.75, 0, this::opModeIsActive);
             drive2.driveRobotCentric(0, 0, 0);
 
             telemetry.update();

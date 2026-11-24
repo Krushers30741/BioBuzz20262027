@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 /**
@@ -14,7 +15,7 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
 
     protected MecanumDrive drive;
     protected MecanumDriveV2 drive2;
-    protected PinpointOdometryOpMode odo;
+    protected GoBildaPinpointDriver odo;   // the Pinpoint odometry board; set by initOdometry()
     protected Intake intake;
     protected Shooter shooter;
     protected VisionSystem vision;
@@ -64,6 +65,15 @@ public abstract class FTC30741Base extends LinearOpMode implements Clock {
      */
     protected void initVision() {
         vision = new VisionSystem(hardwareMap);
+    }
+
+    /**
+     * Sets up the goBILDA Pinpoint odometry board (named "odo" in the robot configuration), with
+     * the same settings as the Pinpoint Odometry OpMode. Call it before waitForStart(), with the
+     * robot still, in any OpMode that needs odo. Call odo.update() every loop to read position.
+     */
+    protected void initOdometry() {
+        odo = PinpointOdometryOpMode.setUp(hardwareMap);
     }
 
     protected void driveForTime(double forward, double strafe, double turn, double seconds) {

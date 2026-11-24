@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -28,8 +25,12 @@ public class shooterTest extends LinearOpMode {
         waitForStart();
        while(opModeIsActive()) {
 
+           // Right bumper = flywheel on, left bumper = flywheel off.
            if (gamepad1.rightBumperWasPressed()) {
                leftShooterMotor.setPower(1.0);
+           }
+           if (gamepad1.leftBumperWasPressed()) {
+               leftShooterMotor.setPower(0);
            }
            panelsTelemetry.addData("shooter velocity", leftShooterMotor.getVelocity()/28*60);
            panelsTelemetry.update(telemetry);

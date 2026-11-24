@@ -32,8 +32,8 @@ public static double SHOOT_SECONDS = 7.0;
                 intake.setPower(0.5);
             }
 
-           drive2.driveTicks(drive2.squares(2), 0, 0.75, 0);
-           drive2.driveTicks(drive2.squares(4), -0.75, 0, 0);
+           drive2.driveTicks(drive2.squares(2), 0, 0.75, 0, this::opModeIsActive);
+           drive2.driveTicks(drive2.squares(4), -0.75, 0, 0, this::opModeIsActive);
 
             if(intake!=null) {
                 intake.setPower(0.0);
