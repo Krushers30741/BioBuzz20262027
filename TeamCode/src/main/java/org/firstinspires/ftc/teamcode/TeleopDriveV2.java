@@ -173,7 +173,8 @@ public class TeleopDriveV2 extends FTC30741Base {
         panelsTelemetry.addData("slow mode", gamepad1.left_bumper ? "ON" : "off");
         if (shooter != null) {
             panelsTelemetry.addData("shooter target", shooter.getTargetVelocity());
-            panelsTelemetry.addData("shooter velocity", shooter.getShooterMotorVelocity());
+            panelsTelemetry.addData("shooter L velocity", shooter.getLeftShooterMotorVelocity());
+            panelsTelemetry.addData("shooter R velocity", shooter.getRightShooterMotorVelocity());
             panelsTelemetry.addData("shooter at speed", shooter.atSpeed());
             panelsTelemetry.addData("conveyor feeding", shot.isFeeding());
             panelsTelemetry.addData("kick active", shot.isKickActive());

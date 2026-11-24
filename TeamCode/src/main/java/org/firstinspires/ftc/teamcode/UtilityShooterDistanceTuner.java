@@ -85,7 +85,8 @@ public class UtilityShooterDistanceTuner extends FTC30741Base {
             panels.addData("DISTANCE (in)", distance > 0
                     ? String.format("%.1f", distance) : "no tag seen");
             panels.addData("SPEED (ticks/sec)", ShotController.SHOOTER_SPEED);
-            panels.addData("shooter velocity", shooter.getShooterMotorVelocity());
+            panels.addData("shooter L velocity", shooter.getLeftShooterMotorVelocity());
+            panels.addData("shooter R velocity", shooter.getRightShooterMotorVelocity());
             panels.addData("shooter at speed", shooter.atSpeed());
             panels.addData("shots (speed dips)", shot.getDipCount());
             panels.addData("write down", "{DISTANCE, SPEED} when most shots score");

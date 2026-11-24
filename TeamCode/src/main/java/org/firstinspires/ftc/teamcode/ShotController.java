@@ -12,15 +12,15 @@ import java.util.function.BooleanSupplier;
  * <pre>
  *   shot = new ShotController(shooter, conveyor);
  *   shot.start();          // begin spinning up
- *   shot.update();         // call EVERY loop - checks the wheel and runs the conveyor
+ *   shot.update();         // call EVERY loop - checks the wheels and runs the conveyor
  *   shot.stop();           // stop shooter and conveyor
  * </pre>
  * An autonomous can instead call {@code shot.run(seconds, this::opModeIsActive)}, which does
  * start / update-until-time-is-up / stop in one call.</p>
  *
- * <p>How it feeds: the conveyor stays off until the flywheel is at speed and has stayed there for
- * SETTLE_MS. Then it runs. When a ball pulls the wheel DIP_TRIGGER_PERCENT or more below
- * SHOOTER_SPEED, the target is raised by KICK_PERCENT until the wheel is back at SHOOTER_SPEED;
+ * <p>How it feeds: the conveyor stays off until BOTH wheels are at speed and have stayed there for
+ * SETTLE_MS. Then it runs. When a ball pulls the slower wheel DIP_TRIGGER_PERCENT or more below
+ * SHOOTER_SPEED, the target is raised by KICK_PERCENT until the wheels are back at SHOOTER_SPEED;
  * with PAUSE_AFTER_EACH_BALL the conveyor also stops until the speed is back and settled.</p>
  *
  * <p>Speed from distance: when USE_DISTANCE_SPEED is true, start() asks the camera how far away
@@ -55,7 +55,7 @@ public class ShotController {
             {72, 820},
             {96, 920},
     });
-    // The wheel must stay at speed this long (ms) before the conveyor feeds a ball.
+    // The wheels must stay at speed this long (ms) before the conveyor feeds a ball.
     public static double SETTLE_MS = 150;
     // Raise the target by KICK_PERCENT when a ball drags the speed down by DIP_TRIGGER_PERCENT.
     // Set KICK_PERCENT to 0 to turn the kick off.
@@ -65,7 +65,7 @@ public class ShotController {
     public static boolean PAUSE_AFTER_EACH_BALL = true;
     // Safety: if the speed has not recovered this long (ms) after a dip, feed the next ball anyway.
     public static double PAUSE_TIMEOUT_MS = 500;
-    // Safety: if the wheel has not reached speed this long (ms) after start(), feed anyway so a
+    // Safety: if the wheels have not reached speed this long (ms) after start(), feed anyway so a
     // shot can never wait forever on a wheel that will not get up to speed.
     public static double SPINUP_TIMEOUT_MS = 3000;
 
@@ -94,7 +94,7 @@ public class ShotController {
         this.vision = vision;
     }
 
-    /** Begin spinning up. The conveyor stays off until the wheel is at speed. */
+    /** Begin spinning up. The conveyor stays off until the wheels are at speed. */
     public void start() {
         shotSpeed = pickShotSpeed();
         shooter.setForwardDirection();
@@ -133,7 +133,8 @@ public class ShotController {
             return;
         }
         boolean atSpeed = shooter.atSpeed();
-        double lowest = shooter.getShooterMotorVelocity();
+        double lowest = Math.min(shooter.getLeftShooterMotorVelocity(),
+                shooter.getRightShooterMotorVelocity());
 
         if (atSpeed && !wasAtSpeed) {
             settleTimer.reset();            // just got to speed - start the settle clock
@@ -150,7 +151,7 @@ public class ShotController {
             return;
         }
 
-        // A ball pulled the speed down: kick the target up a few percent until the wheel is
+        // A ball pulled the speed down: kick the target up a few percent until the wheels are
         // back at shotSpeed, then go back to the normal target.
         if (!inDip && lowest < shotSpeed * (1 - DIP_TRIGGER_PERCENT / 100.0)) {
             inDip = true;

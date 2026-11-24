@@ -24,13 +24,12 @@ public class Shooter {
     public static double VELOCITY_F = 0;
 
 
-    // One flywheel motor, named "shooter" in the robot configuration (Expansion Hub 3).
-    // (The old two-wheel shooter used leftShooterMotor and rightShooterMotor.)
-    private final DcMotorEx shooterMotor;
+    private final DcMotorEx rightShooterMotor;
+    private final DcMotorEx leftShooterMotor;
 
 
     // Asynchronous tracking variables
-    // "At speed" means the wheel reaches this fraction of the target. A motor in velocity mode
+    // "At speed" means BOTH wheels reach this fraction of the target. A motor in velocity mode
     // hovers around its target and often sits just under it, so 100% can never be met.
     private static final double READY_FRACTION = 0.97;
 
@@ -40,9 +39,11 @@ public class Shooter {
     private boolean isSpinningUp = false;
 
     public Shooter(HardwareMap hardwareMap) {
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter");//Expansion Hub 3
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        setForwardDirection();   // shoot direction, same as the shooterTest OpMode
+        leftShooterMotor = hardwareMap.get(DcMotorEx.class, "leftShooterMotor");//Expansion Hub 2
+        rightShooterMotor = hardwareMap.get(DcMotorEx.class, "rightShooterMotor");//Control Hub 2
+
+        leftShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     // Call this ONCE to initiate the spin-up sequence
@@ -51,9 +52,11 @@ public class Shooter {
         this.targetVelocity = velocity;
         if (VELOCITY_F > 0) {
             PIDFCoefficients pidf = new PIDFCoefficients(VELOCITY_P, VELOCITY_I, VELOCITY_D, VELOCITY_F);
-            shooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+            leftShooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
+            rightShooterMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidf);
         }
-        shooterMotor.setVelocity(velocity);
+        leftShooterMotor.setVelocity(velocity);
+        rightShooterMotor.setVelocity(velocity);
 
         this.waitCounter = 0;
         this.timer.reset();
@@ -87,7 +90,7 @@ public class Shooter {
     }
 
     /**
-     * True whenever the wheel is at (97% of) the target speed. Unlike isReady() this can be
+     * True whenever both wheels are at (97% of) the target speed. Unlike isReady() this can be
      * asked every loop - it does not use up its answer and it has no timeout, so true really
      * means "up to speed".
      */
@@ -96,12 +99,12 @@ public class Shooter {
             return false;
         }
         double needed = targetVelocity * READY_FRACTION;
-        return getShooterMotorVelocity() >= needed;
+        return getLeftShooterMotorVelocity() >= needed && getRightShooterMotorVelocity() >= needed;
     }
 
-    /** The hub's velocity-control values currently in use on the shooter motor (debug). */
+    /** The hub's velocity-control values currently in use on the left shooter motor (debug). */
     public String getVelocityPidf() {
-        PIDFCoefficients c = shooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients c = leftShooterMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
         return String.format("P=%.2f I=%.2f D=%.2f F=%.2f", c.p, c.i, c.d, c.f);
     }
 
@@ -126,25 +129,30 @@ public class Shooter {
     }
 
     public void setPower(double power) {
-        shooterMotor.setPower(power);
+        leftShooterMotor.setPower(power);
+        rightShooterMotor.setPower(power);
     }
 
-    /** Flywheel speed in ticks/second (28 ticks per motor turn, so RPM = this / 28 * 60). */
-    public double getShooterMotorVelocity() {
-        return shooterMotor.getVelocity();
+    public double getLeftShooterMotorVelocity() {
+        return leftShooterMotor.getVelocity();
     }
 
-    // "Forward" = the direction that shoots. shooterTest showed REVERSE shoots on this motor.
-    // If the wheel spins backwards on the robot, swap REVERSE and FORWARD in these two methods.
+    public double getRightShooterMotorVelocity() {
+        return rightShooterMotor.getVelocity();
+    }
+
     public void setForwardDirection(){
-        shooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void setReverseDirection(){
-        shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void setFloat(){
-        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 }
